@@ -13,7 +13,9 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -56,7 +58,7 @@ ROOT_URLCONF = 'emalle.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'alpha', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'onek_pera',
         'USER': 'root',
-        'PASSWORD': 'Mansu_Uses@11',  # change password back to 1234 again
+        'PASSWORD': '1234',  # change password back to 1234 again
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -126,7 +128,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'E:\\OneDrive\\OneDrive - MSFT\\Programming\\471_project\\emalle\\alpha\\templates'
+# STATIC_ROOT = 'E:\\OneDrive\\OneDrive - MSFT\\Programming\\471_project\\emalle\\alpha\\templates'
+STATIC_ROOT = 'E:\\OneDrive\OneDrive - MSFT\\Programming\\471_project\\Module-2\\Emall-e\\alpha\\templates'
 # STATICFILES_DIRS = [
 #     # Add paths to your static files directories
 #     os.path.join(BASE_DIR, 'static'),

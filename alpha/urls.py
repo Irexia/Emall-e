@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll
+from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view
 
 urlpatterns = [
     path("", index, name="index"),
@@ -10,4 +10,5 @@ urlpatterns = [
     path("userpage/", user_page, name="user_page"),
     path("polls/", polls, name="polls"),
     path("poll/<int:poll_id>/vote/<int:choice_id>/", vote_poll, name="vote_poll"),
+    path('electronic/', electronic_view, name="electronic"),
 ]

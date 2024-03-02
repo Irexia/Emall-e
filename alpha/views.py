@@ -11,6 +11,9 @@ def index(request):
     items = Item.objects.all()
     return render(request, "index.html", {"items": items})
 
+def electronic_view(request):
+    return render(request, 'electronic.html')
+
 
 # Create your views here.
 def my_view(request):

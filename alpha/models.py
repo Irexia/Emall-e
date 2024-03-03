@@ -48,6 +48,35 @@ class Choice(models.Model):
     def __str__(self):
         return f"{self.name} - {self.count}"
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name}"
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.FloatField()
+    image = models.ImageField(upload_to="uploads/", null=True, blank=True, default="no-image.png")
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+class Order(models.Model):
+    user = models.ForeignKey(login_info, on_delete=models.CASCADE)
+    order_placed = models.BooleanField(default=False)
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name="order_items", on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.product.name} - {self.quantity}"
+
 
 # Explicitly declare app_label
 class Meta:

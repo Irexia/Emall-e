@@ -11,9 +11,7 @@
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <style>
-        body {
-            background-color: #f26522 !important; /* Add !important to ensure the style is applied */
-        }
+      
         .card {
             background-color: #fff; /* Off-white card color */
         }
@@ -32,8 +30,12 @@
             text-align: center;
         }
     </style>
+    
+   <script src="https://cdn.tailwindcss.com"></script>
+   <script>tailwind.config = {prefix: 'tw-', darkMode: 'class', corePlugins: {preflight: false}}</script>
 </head>
-<body class="bg-light">
+<body class="">
+    <div class="tw-bg-zinc-100 dark:tw-bg-zinc-900 tw-h-screen tw-overflow-auto">
     {% if form.errors %}
     <div class="alert alert-danger" role="alert">
         <strong>Error:</strong> Please correct the following issues:
@@ -48,7 +50,7 @@
 <div class="container-fluid h-100">
     <div class="row align-items-center justify-content-center h-100">
         <div class="col-md-6">
-            <div class="card">
+            <div class="card tw-bg-white dark:tw-bg-zinc-800">
                 <div class="card-body">
                     <h2 class="card-title text-center"><i class="fa fa-user-plus"></i> Signup</h2>
 
@@ -141,5 +143,74 @@
     </div>
 </div>
 
+<script>
+         function openNav() {
+           document.getElementById("mySidenav").style.width = "250px";
+         }
+         
+         function closeNav() {
+           document.getElementById("mySidenav").style.width = "0";
+         }
+         function initTheme() {
+            let switchEl = document.querySelector('.btn-circle');
+            let dark = localStorage.getItem('dark')
+            if (dark === 'true') {
+               document.body.classList.add('tw-dark');
+               switchEl.style.transition = "none";
+               switchEl.classList.add('active');
+               setTimeout(() => {
+                  switchEl.style.transition = "all 0.5s ease";
+               }, 1);
+            } else {
+               document.body.classList.remove('tw-dark');
+            }
+         }
+         initTheme();
+         function toggleDarkMode() {
+            let dark = localStorage.getItem('dark')
+            if (dark === 'true') {
+               document.body.classList.remove('tw-dark');
+               localStorage.setItem('dark', 'false');
+            } else {
+               document.body.classList.add('tw-dark');
+               localStorage.setItem('dark', 'true');
+            }
+         }
+         var allBtns = document.querySelectorAll('.btn-holder');
+
+         for (i = 0; i < allBtns.length; i++) {
+            var btn = allBtns[i];
+
+            btn.addEventListener('click', function () {
+               var allNodes = btn.children;
+
+               btn.querySelector('input').checked = true;
+               for (j = 0; j < allNodes.length; j++) {
+                  var node = allNodes[j];
+                  var isActive;
+
+                  if (node.classList.contains('btn-circle')) {
+                     if (!node.classList.contains('active')) {
+                        node.classList.add('active');
+                        isActive = true;
+                     } else {
+                        node.classList.remove('active');
+                        isActive = false;
+                     }
+                  }
+
+                  // check for check box and change it's state
+                  if (node.classList.contains('checkbox')) {
+                     if (isActive) {
+                        node.checked = true;
+                     } else {
+                        node.checked = false;
+                     }
+                  }
+               }
+            })
+         }
+      </script>
+    </div>
 </body>
 </html>

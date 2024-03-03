@@ -39,6 +39,10 @@
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css"
       media="screen">
 
+
+   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+   <script src="https://cdn.tailwindcss.com"></script>
+   <script>tailwind.config = {prefix: 'tw-', darkMode: 'class', corePlugins: {preflight: false}}</script>
 </head>
 
 <body>
@@ -122,13 +126,17 @@
                      </div> -->
                   <div class="login_menu">
                      <ul>
-                        <li><a href="#">
+                        <li><a href="/orders">
+                              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                              <span class="padding_10">Orders</span></a>
+                        </li>
+                        <li><a href="/cart">
                               <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                               <span class="padding_10">Cart</span></a>
                         </li>
-                        <li><a href="polls">
+                        <li><a href="/polls">
                               <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                              <span class="padding_10">Poll</span></a>
+                              <span class="padding_10">Polls</span></a>
                         </li>
                         <!-- <li><a href="#">
                               <i class="fa fa-user" aria-hidden="true"></i>
@@ -156,42 +164,57 @@
       <!-- header section end -->
 
    </div>
-   
 
-   <!-- polls -->
-   <script src="https://cdn.tailwindcss.com"></script>
-   <script>tailwind.config = {prefix: 'tw-', darkMode: 'class', corePlugins: {preflight: false}}</script>
+
    <div class="py-3 invisible">a</div>
    <div class="container" style="max-width: 800px;">
-      <div class="tw-text-3xl tw-font-bold">Polls</div>
-      {% if polls %}
-      {% for poll in polls %}
-      <div class="card mt-3 dark:tw-border-gray-500">
-         <div class="card-body tw-bg-gray-100 dark:tw-bg-gray-900">
-            <h2 class="">{{ poll.question }}</h2>
-            <ul class="list-group list-group-flush">
-               {% for choice in poll.choices.all %}
-               <li class="list-group-item d-flex justify-content-between align-items-center {% if choice in user_choices %} bg-primary text-white {% endif %}
-                  tw-bg-gray-50 dark:tw-bg-gray-950 hover:tw-bg-gray-200 dark:hover:tw-bg-gray-800 tw-duration-0"
-                  onclick="fetch('/poll/{{ poll.id }}/vote/{{ choice.id }}').then(() => window.location.reload())">
-                  <!-- {{ choice.voters.all }} -->
-                  <div class="">
-                     {% if choice in user_choices %}
-                     <i class="fa fa-check-circle-o" aria-hidden="true"></i>
-                     {% endif %}
-                     {{ choice.name }}
-                  </div>
-                  <span class="badge badge-secondary badge-pill">{{ choice.count }}</span>
-               </li>
-               {% endfor %}
-            </ul>
+      <div class="tw-text-3xl tw-font-bold ">Order</div>
+      <div x-data="{show: false}">
+         <div class="tw-flex tw-flex-col ">
+            <button @click="show = !show">Show QR Code</button>
+            <img x-show="show" class="tw-aspect-square tw-object-contain tw-max-h-48" src="data:image/png;base64,{{ qr_code }}" alt="" srcset="">
          </div>
       </div>
+
+      <table class="table">
+         <thead>
+            <tr>
+               <th>Product</th>
+               <th>Category</th>
+               <th>Quantity</th>
+            </tr>
+         </thead>
+         <tbody>
+      {%for item in order.items.all %}    <tr>
+               <td>
+                  <div class="tw-flex tw-flex-col">
+                     <div class="tw-text-md">{{ item.product.name }}</div>
+                     <div class="tw-text-sm">${{ item.product.price }}</div>
+                  </div>
+               </td>
+               <td>{{ item.product.category }}</td>
+               <td>
+                  <div class="tw-flex tw-flex-col">
+                     <div class="tw-text-md">Quantity: {{ item.quantity }}</div>
+                  </div>
+               </td>
+            </tr>
       {% endfor %}
-      {% endif %}
-   
+         </tbody>
+      </table>
+
+      <div class="text-md"><strong>Order Placed:</strong> {{ order.order_placed }}</div>
+
+      <div class="flex">
+         <button class="p-2 rounded tw-bg-blue-400 tw-text-white dark:tw-bg-blue-700 dark:tw-text-white" onclick="window.location.href='/'">Continue Shopping</button>
+         {% if not order.order_placed %}
+         <button class="p-2 rounded tw-bg-blue-400 tw-text-white dark:tw-bg-blue-700 dark:tw-text-white" onclick="window.location.href='/order/{{ order.id }}?action=place'">Place Order</button>
+         {% endif %}
+      </div>
    </div>
-   <div class="py-3 invisible">a</div>
+   <div class="py-3 invisible">_</div>
+
+   
 
    <!-- footer section start -->
    <div class="footer_section layout_padding">

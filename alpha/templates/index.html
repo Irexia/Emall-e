@@ -35,6 +35,10 @@
       <link rel="stylesoeet" href="css/owl.theme.default.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
       
+   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+      <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+
    </head>
    <body>
       <!-- banner bg main start -->
@@ -73,7 +77,7 @@
          <div class="header_section">
             <div class="container">
                <div class="containt_main">
-                  <div id="mySidenav" class="sidenav">
+                  <div id="mySidenav" class="sidenav" style="z-index: 10;">
                      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
                      <a href="{% url 'index' %}">Home</a>
                      <a href="{% url 'electronic' %}">Electronic</a>
@@ -117,11 +121,15 @@
                      </div> -->
                      <div class="login_menu">
                         <ul>
-                           <li><a href="#">
+                           <li><a href="/orders">
+                              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                              <span class="padding_10">Orders</span></a>
+                           </li>
+                           <li><a href="/cart">
                               <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                               <span class="padding_10">Cart</span></a>
                            </li>
-                           <li><a href="polls">
+                           <li><a href="/polls">
                               <i class="fa fa-thumbs-up" aria-hidden="true"></i>
                               <span class="padding_10">Polls</span></a>
                            </li>
@@ -198,6 +206,51 @@
       </div>
       <!-- banner bg main end -->
       <!-- fashion section start -->
+
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script>tailwind.config = {prefix: 'tw-', darkMode: 'class', corePlugins: {preflight: false}}</script>
+      <div class="flex flex-col container">
+         <!-- Swiper Container -->
+         <div class="fashion_taital">Products</div>
+         {% if products %}
+            <div class="swiper-container">
+               <div class="swiper-wrapper">
+                  {% for product in products %}
+                  <div class="swiper-slide ">
+                     <a href="{{'product'}}/{{product.id}}">
+                        <div class="col">
+                           <div class="box_main">
+                              <h4 class="shirt_text">{{ product.name }}</h4>
+                              <p class="price_text">Price <span style="color: #262626;">$ {{ product.price }}</span></p>
+                              <div class="tshirt_img"><img class="w-full" src="{{ product.image.url }}"></div>
+                              <div class="btn_main">
+                                 <div class="buy_bt"><a href="#">Buy Now</a></div>
+                                 <div class="seemore_bt"><a href="#">See More</a></div>
+                              </div>
+                           </div>
+                        </div>
+                     </a>
+                  </div>
+                  {% endfor %}
+               </div>
+            </div>
+         {% else %}
+            <div class="tw-text-center tw-text-lg">
+               No Products
+            </div>
+         {% endif %}
+
+         <script>
+            var swiper = new Swiper('.swiper-container', {
+               slidesPerView: 3,
+               spaceBetween: 10,
+               autoplay: {
+                  delay: 2000, 
+               },
+            });
+         </script>
+     
+      </div>
       <div class="fashion_section">
          <div id="main_slider" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
@@ -209,7 +262,7 @@
                            <div class="col-lg-4 col-sm-4">
                               <div class="box_main">
                                  <h4 class="shirt_text">Man T -shirt</h4>
-                                 <p class="price_text">Price  <span style="color: #262626;">$ 30</span></p>
+                                 <p class="price_text">Price <span style="color: #262626;">$ 30</span></p>
                                  <div class="tshirt_img"><img src="{% static 'images/tshirt-img.png' %}"></div>
                                  <div class="btn_main">
                                     <div class="buy_bt"><a href="#">Buy Now</a></div>
@@ -220,7 +273,7 @@
                            <div class="col-lg-4 col-sm-4">
                               <div class="box_main">
                                  <h4 class="shirt_text">Man -shirt</h4>
-                                 <p class="price_text">Price  <span style="color: #262626;">$ 30</span></p>
+                                 <p class="price_text">Price <span style="color: #262626;">$ 30</span></p>
                                  <div class="tshirt_img"><img src="{% static 'images/dress-shirt-img.png' %}"></div>
                                  <div class="btn_main">
                                     <div class="buy_bt"><a href="#">Buy Now</a></div>
@@ -231,7 +284,7 @@
                            <div class="col-lg-4 col-sm-4">
                               <div class="box_main">
                                  <h4 class="shirt_text">Woman Scart</h4>
-                                 <p class="price_text">Price  <span style="color: #262626;">$ 30</span></p>
+                                 <p class="price_text">Price <span style="color: #262626;">$ 30</span></p>
                                  <div class="tshirt_img"><img src="{% static 'images/women-clothes-img.png' %}"></div>
                                  <div class="btn_main">
                                     <div class="buy_bt"><a href="#">Buy Now</a></div>

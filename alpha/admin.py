@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import login_info, Item, Poll, Choice
+from .models import login_info, Item, Poll, Choice, Product, Order, OrderItem, Category
 
 
 # Register your models here.
@@ -16,3 +16,15 @@ admin.site.register(Item)
 
 admin.site.register(Poll, PollAdmin)
 admin.site.register(Choice)
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+
+class OrderAdmin(admin.ModelAdmin):
+    inlines = [OrderItemInline]
+
+admin.site.register(Category)
+admin.site.register(Product)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem)

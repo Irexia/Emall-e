@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Item, login_info, Poll, Choice
+from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from .forms import SignupForm, LoginForm, ForgotPasswordForm
@@ -8,8 +8,8 @@ from django.contrib.auth.views import LoginView
 
 
 def index(request):
-    items = Item.objects.all()
-    return render(request, "index.html", {"items": items})
+    products = Product.objects.all()
+    return render(request, "index.html", {"products": products})
 
 def electronic_view(request):
     return render(request, 'electronic.html')
@@ -168,3 +168,99 @@ def vote_poll(request, *args, **kwargs):
     prefered_choice.voters.add(request.user)
     prefered_choice.save()
     return redirect("polls")
+
+
+def product(request, product_id):
+    product = Product.objects.get(id=product_id)
+    return render(request, "product.html", {"product": product})
+
+
+def cart(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    order = Order.objects.filter(user=request.user, order_placed=False).first()
+    if not order:
+        order = Order.objects.create(user=request.user)
+
+    if request.GET.get("action") == "add":
+        try:
+            if Product.objects.get(id=request.GET.get("product_id")).quantity - int(request.GET.get("quantity")) < 0:
+                request.session["error"] = "Product is out of stock. Remaining quantity: "+str(Product.objects.get(id=request.GET.get("product_id")).quantity)
+                return redirect("cart")
+            order.items.create(
+                product=Product.objects.get(id=request.GET.get("product_id")),
+                quantity=request.GET.get("quantity"),
+            )
+            return redirect("cart")
+        except Exception as e:
+            print(e)
+
+    last_error=request.session.get("error")
+    request.session["error"] = None
+
+    return render(request, "cart.html", {"order": order, "error": last_error})
+
+
+import qrcode # pip install qrcode pillow
+import base64
+from io import BytesIO
+
+def generate_qr_code(url):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return encoded_image
+
+import json
+from django.http import HttpResponse
+def order(request, *args, **kwargs):
+    order = Order.objects.filter(user=request.user, order_placed=False).first()
+    if request.GET.get("action") == "remove_item":
+        try:
+            order.items.filter(id=request.GET.get("item_id")).delete()
+            return redirect('/cart')
+        except Exception as e:
+            print(e)
+            return HttpResponse(e, status=500)
+
+    if request.GET.get("action") == "place":
+        if order.items.count() == 0:
+            request.session["error"] = "Cart is empty"
+            return redirect(request.META.get("HTTP_REFERER"))
+        # update quantities
+        order_items = json.loads(request.GET.get('items'))
+        print(order_items)
+        for item in order.items.all():
+            item.quantity = [x for x in order_items if x.get('item_id') == item.id][0].get('quantity')
+            if item.quantity > item.product.quantity:
+                request.session["error"] = "Not enough in stock. Remaining quantity of "+item.product.name+": "+str(item.product.quantity)
+                return redirect(request.META.get("HTTP_REFERER"))
+            item.save()
+        try:
+            order.order_placed = True
+            for item in order.items.all():
+                item.product.quantity -= item.quantity
+                item.product.save()
+            order.save()
+            return redirect('/order/'+str(order.id))
+        except Exception as e:
+            print(e)
+            return 
+
+    order = Order.objects.filter(id=kwargs.get("order_id")).first()
+    return render(request, "order.html", {'order': order, 'qr_code': generate_qr_code(request.build_absolute_uri('/order/'+str(order.id)))})
+
+def orders(request, *args, **kwargs):
+    orders = Order.objects.filter(user=request.user)
+    return render(request, "orders.html", {'orders': orders})

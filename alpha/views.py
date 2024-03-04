@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem
+from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Category
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
-from .forms import SignupForm, LoginForm, ForgotPasswordForm
+from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 
@@ -264,3 +264,20 @@ def order(request, *args, **kwargs):
 def orders(request, *args, **kwargs):
     orders = Order.objects.filter(user=request.user)
     return render(request, "orders.html", {'orders': orders})
+
+# advanced search
+def product_search_view(request):
+    queryset = Product.objects.all()
+    form = ProductSearchForm(request.GET)
+
+    if form.is_valid():
+        queryset = form.filter_queryset(queryset)
+
+    context = {
+        'form': form,
+        'results': queryset,
+    }
+
+    return render(request, 'product_search.html', context)
+
+

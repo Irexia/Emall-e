@@ -1,0 +1,469 @@
+{% comment %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search</title>
+
+    <!-- Add your favorite styles here -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #f26522;
+            text-align: center;
+        }
+
+        .main {
+            max-width: 800px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            width: 48%; /* Adjust the width as needed */
+            font-weight: bold;
+            border: 1px solid #f26522; /* Orange border */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn-secondary {
+            background-color: #f26522 !important;
+            border-color: #f26522 !important;
+            color: #fff !important;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #f26522;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px; /* Adjust the margin as needed */
+        }
+
+
+         ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        li {
+            margin-bottom: 15px;
+            border: 1px solid #f26522;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+    </style>
+
+    <!-- Include Bootstrap CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <!-- Include Slider Libraries -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+</head>
+<body>
+
+  <h1>Product Search</h1>
+
+  <div class="main">
+    <form method="get" action="{% url 'product_search' %}" class="input-group">
+        <div class="form-group">
+            <label for="{{ form.keyword.id_for_label }}">Keyword:</label>
+            {{ form.keyword }}
+        </div>
+
+        <div class="form-group">
+            <label>Categories:</label>
+            {{ form.category }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.min_price.id_for_label }}">Min Price:</label>
+            {{ form.min_price }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.max_price.id_for_label }}">Max Price:</label>
+            {{ form.max_price }}
+        </div>
+
+        <button type="submit" class="btn btn-secondary">
+            <i class="fa fa-search"></i> Search
+        </button>
+    </form>
+  </div>
+
+  {% if results %}
+    <h2>Search Results:</h2>
+    <ul>
+        {% for product in results %}
+            <li>
+                <strong style="color: #f26522;">{{ product.name }}</strong> -
+                {{ product.description }} -
+                ${{ product.price }} -
+                Quantity: {{ product.quantity }}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p style="color: #f26522; font-weight: bold; text-align: center; margin-top: 20px;">No results found.</p>
+{% endif %}
+
+</body>
+</html> {% endcomment %}
+{% comment %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search</title>
+
+    <!-- Add your favorite styles here -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #f26522;
+            text-align: center;
+        }
+
+        .main {
+            max-width: 800px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            width: 48%; /* Adjust the width as needed */
+            font-weight: bold;
+            border: 1px solid #f26522; /* Orange border */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn-secondary {
+            background-color: #f26522 !important;
+            border-color: #f26522 !important;
+            color: #fff !important;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #f26522;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px; /* Adjust the margin as needed */
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        li {
+            margin-bottom: 15px;
+            border: 1px solid #f26522;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        p {
+            color: #f26522;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .home-link {
+            text-decoration: none;
+            color: #f26522;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <!-- Include Bootstrap CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <!-- Include Slider Libraries -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+</head>
+<body>
+
+<h1>Product Search</h1>
+
+<div class="main">
+    <a href="{% url 'index' %}" class="home-link">Home</a> <!-- Home button link -->
+
+    <form method="get" action="{% url 'product_search' %}" class="input-group">
+        <div class="form-group">
+            <label for="{{ form.keyword.id_for_label }}">Keyword:</label>
+            {{ form.keyword }}
+        </div>
+
+        <div class="form-group">
+            <label>Categories:</label>
+            {{ form.category }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.min_price.id_for_label }}">Min Price:</label>
+            {{ form.min_price }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.max_price.id_for_label }}">Max Price:</label>
+            {{ form.max_price }}
+        </div>
+
+        <button type="submit" class="btn btn-secondary">
+            <i class="fa fa-search"></i> Search
+        </button>
+    </form>
+</div>
+
+{% if results %}
+    <h2>Search Results:</h2>
+    <ul>
+        {% for product in results %}
+            <li>
+                <strong style="color: #f26522;">{{ product.name }}</strong> -
+                {{ product.description }} -
+                ${{ product.price }} -
+                Quantity: {{ product.quantity }}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No results found.</p>
+{% endif %}
+
+</body>
+</html> {% endcomment %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search</title>
+
+    <!-- Add your favorite styles here -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #f26522 !important;
+            text-align: center;
+        }
+
+        .main {
+            max-width: 800px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            width: 48%; /* Adjust the width as needed */
+            font-weight: bold;
+            border: 1px solid #f26522; /* Orange border */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn-secondary {
+            background-color: #f26522 !important;
+            border-color: #f26522 !important;
+            color: #fff !important;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #f26522;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px; /* Adjust the margin as needed */
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        li {
+            margin-bottom: 15px;
+            border: 1px solid #f26522;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        p {
+            color: #f26522;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .home-link {
+            text-decoration: none;
+            color: #f26522;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Added style for the product name link */
+        .product-link {
+            color: #f26522;
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Include Bootstrap CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <!-- Include Slider Libraries -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+</head>
+<body>
+
+<h1>Advanced Search</h1>
+
+<div class="main">
+    <a href="{% url 'index' %}" class="home-link">Home</a> <!-- Home button link -->
+
+    <form method="get" action="{% url 'product_search' %}" class="input-group">
+        <div class="form-group">
+            <label for="{{ form.keyword.id_for_label }}">Keyword:</label>
+            {{ form.keyword }}
+        </div>
+
+        <div class="form-group">
+            <label>Categories:</label>
+            {{ form.category }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.min_price.id_for_label }}">Min Price:</label>
+            {{ form.min_price }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.max_price.id_for_label }}">Max Price:</label>
+            {{ form.max_price }}
+        </div>
+
+        <button type="submit" class="btn btn-secondary">
+            <i class="fa fa-search"></i> Search
+        </button>
+    </form>
+</div>
+
+{% if results %}
+    <h2>Search Results:</h2>
+    <ul>
+        {% for product in results %}
+            <li>
+                <strong class="product-link" onclick="window.location.href='{{ product.get_absolute_url }}';">{{ product.name }}</strong> -
+                {{ product.description }} -
+                ${{ product.price }} -
+                Quantity: {{ product.quantity }}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100px; max-height: 100px;">
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No results found.</p>
+{% endif %}
+
+</body>
+</html>
+

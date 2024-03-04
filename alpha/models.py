@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-
+from django.urls import reverse
 SECURITY_QUESTION_CHOICES = [
     ('q1', 'What is your favorite color?'),
     ('q2', 'What is the name of your first pet?'),
@@ -64,6 +64,9 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+    #added to fetch advanced-search url
+    def get_absolute_url(self):
+        return reverse('product_details', args=[str(self.id)])
 
 class Order(models.Model):
     user = models.ForeignKey(login_info, on_delete=models.CASCADE)

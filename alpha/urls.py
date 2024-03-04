@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders
+from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, product_search_view
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -17,6 +17,7 @@ urlpatterns = [
     path("cart/", cart, name="cart"),
     path("orders", orders, name="orders"),
     path("order/<int:order_id>/", order, name="order"),
+    path('product-search/', product_search_view, name='product_search'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -98,15 +98,15 @@
                   </div>
                   <div class="main">
                      <!-- Another variation with a button -->
-                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search this blog">
-                        <div class="input-group-append">
-                           <button class="btn btn-secondary" type="button" style="background-color: #f26522; border-color:#f26522 ">
-                           <i class="fa fa-search"></i>
-                           </button>
-                        </div>
-                     </div>
-                  </div>
+                     <form method="get" action="{% url 'product_search' %}" class="input-group">
+                         <input type="text" name="keyword" class="form-control" placeholder="Search this blog">
+                         <div class="input-group-append">
+                             <button type="submit" class="btn btn-secondary" style="background-color: #f26522; border-color: #f26522">
+                                 <i class="fa fa-search"></i>
+                             </button>
+                         </div>
+                     </form>
+                 </div>
                   <div class="header_box">
                      <!-- <div class="lang_box ">
                         <a href="#" title="Language" class="nav-link" data-toggle="dropdown" aria-expanded="true">

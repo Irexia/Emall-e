@@ -38,7 +38,58 @@
    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
       <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 
-
+      <style>
+         #toggleLeaderboardButton {
+            display: block;
+            margin: 0 auto;
+        }
+         .hidden {
+            display: none;
+        }
+         body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+         }
+      
+         .leaderboard-container {
+            margin-top: 10px;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center; /* Add this line for centering the content */
+        }
+      
+         h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+         }
+      
+         table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+         }
+      
+         th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            color: #f8f9fa;
+         }
+      
+         th {
+            background-color: #ffc108;
+         }
+      
+         tbody tr:hover {
+            background-color: #f26522 !important;
+         }
+      </style>
+      
    </head>
    <body>
       <!-- banner bg main start -->
@@ -54,13 +105,34 @@
                            <li><a href="#">Gift Ideas</a></li>
                            <li><a href="#">New Releases</a></li>
                            <li><a href="#">Today's Deals</a></li>
-                           <li><a href="#">Customer Service</a></li>
+                           <button id="toggleLeaderboardButton" onclick="toggleLeaderboard()" style="padding: 10px 20px; background-color: #f26522; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Toggle Leaderboard</button>
+
                         </ul>
                      </div>
                   </div>
                </div>
             </div>
          </div>
+<!-- Display Leaderboard Section -->
+<div class="container leaderboard-container hidden" id="myLeaderboard" style="margin-top: 50px;">
+   <h2>Leaderboard</h2>
+   <table class="table table-bordered">
+      <thead>
+         <tr>
+            <th>User</th>
+            <th>Total Orders</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% for user_info, order in leaderboard_users %}
+            <tr>
+               <td>{{ user_info.username }}</td>
+               <td>{{ order.total_orders }}</td>
+            </tr>
+         {% endfor %}
+      </tbody>
+   </table>
+</div>
          <!-- header top section start -->
          <!-- logo section start -->
          <!-- <div class="logo_section">
@@ -718,6 +790,10 @@
          function closeNav() {
            document.getElementById("mySidenav").style.width = "0";
          }
+         function toggleLeaderboard() {
+            var leaderboard = document.getElementById("myLeaderboard");
+            leaderboard.classList.toggle("hidden");
+        }
          function initTheme() {
             let switchEl = document.querySelector('.btn-circle');
             let dark = localStorage.getItem('dark')

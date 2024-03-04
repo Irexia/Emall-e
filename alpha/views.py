@@ -5,11 +5,23 @@ from django.contrib.auth.hashers import make_password
 from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
+from django.db.models import Count, Q
 
 
+# def index(request):
+#     products = Product.objects.all()
+#     return render(request, "index.html", {"products": products})
 def index(request):
+    # Your existing logic for fetching products
     products = Product.objects.all()
-    return render(request, "index.html", {"products": products})
+
+    # Add the leaderboard functionality
+    leaderboard_users = Order.objects.values('user').annotate(total_orders=Count('id')).filter(order_placed=True).order_by('-total_orders')[:5]
+
+    # Fetch login_info instances for each user
+    leaderboard_users_info = [login_info.objects.get(id=user['user']) for user in leaderboard_users]
+
+    return render(request, "index.html", {"products": products, "leaderboard_users": zip(leaderboard_users_info, leaderboard_users)})
 
 def electronic_view(request):
     return render(request, 'electronic.html')

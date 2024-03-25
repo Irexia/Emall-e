@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect
 from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Category
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
-from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm
+from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm, UserEditForm
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
+from django.contrib.auth.decorators import login_required
 
 
 # def index(request):
@@ -292,4 +293,29 @@ def product_search_view(request):
 
     return render(request, 'product_search.html', context)
 
+def edit_user_details(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user_page')  # Redirect to profile page after successful update
+    else:
+        form = UserEditForm(instance=user)
+    return render(request, 'edit_user_details.html', {'form': form})
 
+@login_required
+def delete_user(request):
+    user = request.user
+    if request.method == 'POST':
+        user.delete()
+        return redirect('index')  # Redirect to home page after deletion
+    return render(request, 'delete_confirmation.html')
+
+from django.shortcuts import redirect
+from django.contrib.auth import logout
+
+def custom_logout(request):
+    logout(request)
+    # Redirect to desired URL after logout
+    return redirect('index')  # Replace 'index' with the name of your desired URL pattern

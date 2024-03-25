@@ -59,3 +59,7 @@ class ProductSearchForm(forms.Form):
         # Add more filtering logic as needed based on your model
 
         return queryset
+class UserEditForm(forms.ModelForm):
+     class Meta:
+        model = login_info
+        fields = ['username', 'name', 'email', 'age', 'phone_number', 'security_question', 'security_answer']

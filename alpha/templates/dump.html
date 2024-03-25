@@ -67,59 +67,75 @@
         .dashboard_container {
             display: flex;
             flex-wrap: wrap;
-            justify-content: flex-start; /* Align items to the start */
+            justify-content: space-between;
             margin-top: 30px;
-            flex-direction: row; /* Display containers horizontally */
         }
         .dashboard_item {
             background-color: #fff;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: calc(33.33% - 20px); /* Adjust the width of each item as needed */
-            margin-bottom: 10px; /* Reduced margin bottom */
-        }
-        .dashboard_item a {
-            display: block;
-            padding: 20px; /* Add padding to the anchor tags */
-            text-align: center;
-            color: #fff;
-            text-decoration: none;
-            background-color: #f26522;
-            border-radius: 5px;
-            cursor: pointer;
+            margin-bottom: 20px;
         }
         .dashboard_item h2 {
             margin-top: 0;
         }
+        .logout_button {
+            background-color: #f26522;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+    <div class="header_section_top">
+        <div class="container">
+            <h1>{{ user.username }}'s Dashboard</h1>
+            <div class="custom_menu">
+                <!-- <span>{{ user.username }}</span> Display username on the top left corner -->
+                <ul>
+                    <li><a href="{% url 'index' %}" class = "logout_button">Home</a></li>
+                    <li><a href="{% url 'edit_user_details' %}" class = "logout_button">Edit User Details</a></li>
+                    <li><a href="{% url 'delete_user' %}" class="logout_button">Delete Account</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}" class="logout_button">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="container">
-        <h1>{{ user.username }}'s Dashboard</h1>
         <div class="dashboard_container">
             <div class="dashboard_item">
-                <a href="{% url 'index' %}" class="logout_button">Home</a>
+                <h2>Container 1</h2>
+                <li><a href="{% url 'index' %}" class = "logout_button">Home</a></li>
             </div>
             <div class="dashboard_item">
-                <a href="{% url 'edit_user_details' %}" class="logout_button">Edit User Details</a>
+                <h2>Container 2</h2>
+                <!-- Add content for Container 2 -->
             </div>
             <div class="dashboard_item">
-                <a href="{% url 'delete_user' %}" class="logout_button">Delete Account</a>
+                <h2>Container 3</h2>
+                <!-- Add content for Container 3 -->
             </div>
             <div class="dashboard_item">
-                <a href="#" class="logout_button">Purchase history</a>
+                <h2>Container 4</h2>
+                <!-- Add content for Container 4 -->
             </div>
             <div class="dashboard_item">
-                <a href="{% url 'forgot_password' %}" class="logout_button">Change Password</a>
+                <h2>Container 5</h2>
+                <!-- Add content for Container 5 -->
             </div>
             <div class="dashboard_item">
-                <a href="{% url 'logout' %}" class="logout_button">Logout</a>
+                <h2>Container 6</h2>
+                <!-- Add content for Container 6 -->
             </div>
         </div>
     </div>
 </body>
 </html>
-
-
-
-

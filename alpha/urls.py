@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, product_search_view
+from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, product_search_view, edit_user_details, delete_user, custom_logout
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("", index, name="index"),
@@ -18,6 +19,9 @@ urlpatterns = [
     path("orders", orders, name="orders"),
     path("order/<int:order_id>/", order, name="order"),
     path('product-search/', product_search_view, name='product_search'),
+    path('edit/', edit_user_details, name='edit_user_details'),
+    path('delete/', delete_user, name='delete_user'),
+    path('logout/', custom_logout, name='logout'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

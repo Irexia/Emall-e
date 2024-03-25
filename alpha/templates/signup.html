@@ -54,7 +54,7 @@
                 <div class="card-body">
                     <h2 class="card-title text-center"><i class="fa fa-user-plus"></i> Signup</h2>
 
-                    {% if messages %}
+                    {% comment %} {% if messages %}
     {% for message in messages %}
         <div class="alert {% if 'success' in message.tags %}alert-success{% elif 'error' in message.tags %}alert-danger{% else %}alert-{{ message.tags }}{% endif %}" role="alert">
             {{ message }}
@@ -78,7 +78,7 @@
             </script>
         {% endif %}
     {% endif %}
-{% endif %}
+{% endif %} {% endcomment %}
 
                     <form method="post" action="{% url 'signup' %}" class="text-center">
                         {% csrf_token %}

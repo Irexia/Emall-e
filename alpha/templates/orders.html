@@ -40,135 +40,14 @@
       media="screen">
 
 
-   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-   <script src="https://cdn.tailwindcss.com"></script>
-   <script>tailwind.config = {prefix: 'tw-', darkMode: 'class', corePlugins: {preflight: false}}</script>
 </head>
 
 <body>
-   <!-- banner bg main start -->
-   <div class="banner_bg_main">
-      <!-- header top section start -->
-      <div class="container">
-         <div class="header_section_top">
-            <div class="row">
-               <div class="col-sm-12">
-                  <div class="custom_menu">
-                     <ul>
-                        <li><a href="#">Best Sellers</a></li>
-                        <li><a href="#">Gift Ideas</a></li>
-                        <li><a href="#">New Releases</a></li>
-                        <li><a href="#">Today's Deals</a></li>
-                        <li><a href="#">Customer Service</a></li>
-                     </ul>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- header top section start -->
-      <!-- logo section start -->
-      <!-- <div class="logo_section">
-            <div class="container">
-               <div class="row">
-                  <div class="col-sm-12">
-                     <div class="logo"><a href="index.html"><img src= "{% static 'images/logo.png' %}"></a></div>
-                  </div>
-               </div>
-            </div>
-         </div> -->
-      <!-- logo section end -->
-      <!-- header section start -->
-      <div class="header_section">
-         <div class="container">
-            <div class="containt_main">
-               <div id="mySidenav" class="sidenav" style="z-index: 10;">
-                  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-                  <a href="/">Home</a>
-                  <a href="fashion.html">Fashion</a>
-                  <a href="electronic.html">Electronic</a>
-                  <a href="jewellery.html">Jewellery</a>
-               </div>
-               <span class="toggle_icon" onclick="openNav()"><img src="{% static 'images/toggle-icon.png' %}"></span>
-               <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Category
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                     <a class="dropdown-item" href="#">Action</a>
-                     <a class="dropdown-item" href="#">Another action</a>
-                     <a class="dropdown-item" href="#">Something else here</a>
-                  </div>
-               </div>
-               <div class="main">
-                  <!-- Another variation with a button -->
-                  <div class="input-group">
-                     <input type="text" class="form-control" placeholder="Search this blog">
-                     <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button"
-                           style="background-color: #f26522; border-color:#f26522 ">
-                           <i class="fa fa-search"></i>
-                        </button>
-                     </div>
-                  </div>
-               </div>
-               <div class="header_box">
-                  <!-- <div class="lang_box ">
-                        <a href="#" title="Language" class="nav-link" data-toggle="dropdown" aria-expanded="true">
-                        <img src="{% static 'images/flag-uk.png' %}" alt="flag" class="mr-2 " title="United Kingdom"> English <i class="fa fa-angle-down ml-2" aria-hidden="true"></i>
-                        </a>
-                        <div class="dropdown-menu ">
-                           <a href="#" class="dropdown-item">
-                           <img src="{% static 'images/flag-france.png' %}" class="mr-2" alt="flag">
-                           French
-                           </a>
-                        </div>
-                     </div> -->
-                  <div class="login_menu">
-                     <ul>
-                        <li><a href="/orders">
-                              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                              <span class="padding_10">Orders</span></a>
-                        </li>
-                        <li><a href="/cart">
-                              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                              <span class="padding_10">Cart</span></a>
-                        </li>
-                        <li><a href="/polls">
-                              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                              <span class="padding_10">Polls</span></a>
-                        </li>
-                        <!-- <li><a href="#">
-                              <i class="fa fa-user" aria-hidden="true"></i>
-                              <span class="padding_10">Log in / Sign-up</span></a>
-                        </li> -->
-                        <li>
-                           <div class="dropdown">
-                              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User Credentials
-                              </button>
-                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                 <a class="dropdown-item" href="{% url 'signup' %}" style="color: black;">Sign-up</a>
-                                 <a class="dropdown-item" href="{% url 'login' %}" style="color: black;">Log-in</a>
-                                 <a class="dropdown-item" href="{% url 'forgot_password' %}"
-                                    style="color: black;">Forget Password</a>
-                              </div>
-                           </div>
-                        </li>
-                     </ul>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- header section end -->
-
-   </div>
-
+      {% include 'navbar.html' %}
 
    <div class="py-3 invisible">a</div>
    <div class="container" style="max-width: 800px;">
-      <div class="tw-text-3xl tw-font-bold ">Orders</div>
+      <div class="text-3xl font-bold ">Purchase History</div>
 
       <table class="table">
          <thead>
@@ -176,35 +55,39 @@
                <th>ID</th>
                <th>Items</th>
                <th>Order Placed</th>
+               <th>Order Date</th>
                <th>View</th>
             </tr>
          </thead>
          <tbody>
-      {%for item in orders %}    <tr>
+            {%for item in orders %} <tr>
                <td>
-                     <div class="tw-text-md">{{ item.id }}</div>
+                  <div class="text-md">{{ item.id }}</div>
                </td>
                <td>
-                  <div class="tw-text-md">{{ item.items.count }}</div>
+                  <div class="text-md">{{ item.items.count }}</div>
                </td>
                <td>
-                  <div class="tw-flex tw-flex-col">
-                     <div class="tw-text-md">{{ item.order_placed }}</div>
+                  <div class="flex flex-col">
+                     <div class="text-md">{{ item.order_placed }}</div>
                   </div>
+               </td>
+               <td>
+                  <div class="text-md">{{ item.order_date }}</div>
                </td>
                <td>
                   <button class="p-2 rounded" onclick="window.location.href='/order/{{ item.id }}'">View</button>
                </td>
             </tr>
-      {% endfor %}
+            {% endfor %}
          </tbody>
       </table>
 
-     
+
    </div>
    <div class="py-3 invisible">_</div>
 
-   
+
 
    <!-- footer section start -->
    <div class="footer_section layout_padding">
@@ -251,87 +134,6 @@
 
       function closeNav() {
          document.getElementById("mySidenav").style.width = "0";
-      }
-
-      function initTheme() {
-         let dark = localStorage.getItem('dark')
-         if (dark === 'true') {
-            document.body.classList.add('tw-dark');
-         } else {
-            document.body.classList.remove('tw-dark');
-         }
-      }
-      initTheme();
-      function toggleDarkMode() {
-         let dark = localStorage.getItem('dark')
-         if (dark === 'true') {
-            document.body.classList.remove('tw-dark');
-            localStorage.setItem('dark', 'false');
-         } else {
-            document.body.classList.add('tw-dark');
-            localStorage.setItem('dark', 'true');
-         }
-      }
-      var allBtns = document.querySelectorAll('.btn-holder');
-
-      for (i = 0; i < allBtns.length; i++) {
-         var btn = allBtns[i];
-
-         btn.addEventListener('click', function () {
-            var allNodes = btn.children;
-
-            btn.querySelector('input').checked = true;
-            for (j = 0; j < allNodes.length; j++) {
-               var node = allNodes[j];
-               var isActive;
-
-               if (node.classList.contains('btn-circle')) {
-                  if (!node.classList.contains('active')) {
-                     node.classList.add('active');
-                     isActive = true;
-                  } else {
-                     node.classList.remove('active');
-                     isActive = false;
-                  }
-               }
-
-               // check for check box and change it's state
-               if (node.classList.contains('checkbox')) {
-                  if (isActive) {
-                     node.checked = true;
-                  } else {
-                     node.checked = false;
-                  }
-               }
-            }
-         })
-      }
-      var allBtns = document.querySelectorAll('.btn-holder');
-      for (i = 0; i < allBtns.length; i++) {
-         var btn = allBtns[i];
-         btn.addEventListener('click', function () {
-            var allNodes = btn.children;
-            for (j = 0; j < allNodes.length; j++) {
-               var node = allNodes[j];
-               var isActive;
-               if (node.classList.contains('btn-circle')) {
-                  if (!node.classList.contains('active')) {
-                     node.classList.add('active');
-                     isActive = true;
-                  } else {
-                     node.classList.remove('active');
-                     isActive = false;
-                  }
-               }
-               if (node.classList.contains('checkbox')) {
-                  if (isActive) {
-                     node.checked = true;
-                  } else {
-                     node.checked = false;
-                  }
-               }
-            }
-         })
       }
 
    </script>

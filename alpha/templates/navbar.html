@@ -1,0 +1,156 @@
+{% load static %}
+
+<script defer src="{% static 'js/alpine.js' %}"></script>
+<script src="{% static 'js/tailwind.js' %}"></script>
+<script>tailwind.config = { darkMode: 'class', corePlugins: { preflight: false } }</script>
+<div class="banner_bg_main">
+
+   <!-- header top section start -->
+   <div class="container">
+      <div class="header_section_top">
+         <div class="row">
+            <div class="col-sm-12">
+               <div class="custom_menu">
+                  <ul>
+                     <li><a href="#">Best Sellers</a></li>
+                     <li><a href="#">Gift Ideas</a></li>
+                     <li><a href="#">New Releases</a></li>
+                     <li><a href="#">Today's Deals</a></li>
+                     <li><a href="#">Customer Service</a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- header top section start -->
+   <!-- logo section start -->
+   <!-- <div class="logo_section">
+            <div class="container">
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="logo"><a href="index.html"><img src= "{% static 'images/logo.png' %}"></a></div>
+                  </div>
+               </div>
+            </div>
+         </div> -->
+   <!-- logo section end -->
+   <!-- header section start -->
+   <div class="header_section">
+      <div class="container">
+         <div class="containt_main">
+            <div id="mySidenav" class="sidenav" style="z-index: 10;">
+               <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+               <a href="{% url 'index' %}">Home</a>
+               <a href="{% url 'electronic' %}">Electronic</a>
+               <!-- <a href="fashion.html">Fashion</a> -->
+               <!-- <a href="electronic.html">Electronic</a> -->
+
+               <!-- <a href="jewellery.html">Jewellery</a> -->
+            </div>
+            <span class="toggle_icon" onclick="openNav()"><img src="{% static 'images/toggle-icon.png' %}"></span>
+            <div class="dropdown">
+               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Category
+               </button>
+               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <a class="dropdown-item" href="#">Something else here</a>
+               </div>
+            </div>
+            <div class="main">
+               <!-- Another variation with a button -->
+               <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search this blog">
+                  <div class="input-group-append">
+                     <button class="btn btn-secondary" type="button"
+                        style="background-color: #f26522; border-color:#f26522 ">
+                        <i class="fa fa-search"></i>
+                     </button>
+                  </div>
+               </div>
+            </div>
+            <div class="header_box">
+               <!-- <div class="lang_box ">
+                        <a href="#" title="Language" class="nav-link" data-toggle="dropdown" aria-expanded="true">
+                        <img src="{% static 'images/flag-uk.png' %}" alt="flag" class="mr-2 " title="United Kingdom"> English <i class="fa fa-angle-down ml-2" aria-hidden="true"></i>
+                        </a>
+                        <div class="dropdown-menu ">
+                           <a href="#" class="dropdown-item">
+                           <img src="{% static 'images/flag-france.png' %}" class="mr-2" alt="flag">
+                           French
+                           </a>
+                        </div>
+                     </div> -->
+               <div class="login_menu">
+                  <ul>
+                     <li><a href="/orders">
+                           <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                           <span class="padding_10">Orders</span></a>
+                     </li>
+                     <li><a href="/cart">
+                           <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                           <span class="padding_10">Cart</span></a>
+                     </li>
+                     <li><a href="/polls">
+                           <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                           <span class="padding_10">Polls</span></a>
+                     </li>
+                     <li>
+                        <label for="dark-toggle"
+                           class="flex relative h-8 w-14 cursor-pointer rounded-full bg-gray-300 transition has-[:checked]:bg-gray-800">
+                           <input type="checkbox" id="dark-toggle" class="peer sr-only" onchange="toggleDarkMode()" />
+                           <span
+                              class="flex items-center justify-center absolute inset-y-0 start-0 m-1 size-6 rounded-full bg-zinc-600 transition-all peer-checked:start-6">
+                              <i class="d-flex fa fa-moon-o"></i>
+                           </span>
+                        </label>
+                     </li>
+                     <script>
+                        if (localStorage.dark == 'true') {
+                           document.querySelector('#dark-toggle').checked = true;
+                           document.body.classList.add('dark');
+                        }
+                        function toggleDarkMode() {
+                           if (localStorage.dark == 'true')
+                              document.body.classList.remove('dark');
+                           else
+                              document.body.classList.add('dark');
+                           localStorage.dark = localStorage.dark == 'true' ? 'false' : 'true';
+                        }
+                     </script>
+                     <!-- <li><a href="#">
+                              <i class="fa fa-user" aria-hidden="true"></i>
+                              <span class="padding_10">Log in / Sign-up</span></a>
+                           </li> -->
+                     <li>
+                        <div class="dropdown">
+                           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User Credentials
+                           </button>
+                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <a class="dropdown-item" href="{% url 'signup' %}" style="color: black;">Sign-up</a>
+                              <a class="dropdown-item" href="{% url 'login' %}" style="color: black;">Log-in</a>
+                              <a class="dropdown-item" href="{% url 'forgot_password' %}" style="color: black;">Forget
+                                 Password</a>
+                           </div>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<!-- header section end -->
+
+<div style="clear: both;"></div>
+<div class="my-6"></div>
+{% if error %}
+<div class="p-2 rounded bg-red-500 text-white max-w-lg mx-auto">
+   <strong>Error: </strong>{{error}}
+</div>
+{% endif %}
+<div class="my-6"></div>

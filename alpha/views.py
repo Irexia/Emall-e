@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem
+from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Voucher
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from .forms import SignupForm, LoginForm, ForgotPasswordForm
@@ -11,8 +11,9 @@ def index(request):
     products = Product.objects.all()
     return render(request, "index.html", {"products": products})
 
+
 def electronic_view(request):
-    return render(request, 'electronic.html')
+    return render(request, "electronic.html")
 
 
 # Create your views here.
@@ -180,13 +181,38 @@ def cart(request, *args, **kwargs):
         return redirect("login")
 
     order = Order.objects.filter(user=request.user, order_placed=False).first()
+
     if not order:
         order = Order.objects.create(user=request.user)
 
+    items = []
+    for item in order.items.all():
+        items.append(
+            {
+                **model_to_dict(item),
+                "price": item.product.price,
+                "product": {
+                    **model_to_dict(item.product),
+                    "category": model_to_dict(item.product.category),
+                },
+            }
+        )
+    vouchers = order.vouchers.all()
+    print("vouchers", items)
+
     if request.GET.get("action") == "add":
         try:
-            if Product.objects.get(id=request.GET.get("product_id")).quantity - int(request.GET.get("quantity")) < 0:
-                request.session["error"] = "Product is out of stock. Remaining quantity: "+str(Product.objects.get(id=request.GET.get("product_id")).quantity)
+            if (
+                Product.objects.get(id=request.GET.get("product_id")).quantity
+                - int(request.GET.get("quantity"))
+                < 0
+            ):
+                request.session["error"] = (
+                    "Product is out of stock. Remaining quantity: "
+                    + str(
+                        Product.objects.get(id=request.GET.get("product_id")).quantity
+                    )
+                )
                 return redirect("cart")
             order.items.create(
                 product=Product.objects.get(id=request.GET.get("product_id")),
@@ -196,15 +222,22 @@ def cart(request, *args, **kwargs):
         except Exception as e:
             print(e)
 
-    last_error=request.session.get("error")
-    request.session["error"] = None
+    return render(
+        request,
+        "cart.html",
+        {
+            "order": order,
+            "error": request.session.pop("error", None),
+            "items": items,
+            "vouchers": vouchers,
+        },
+    )
 
-    return render(request, "cart.html", {"order": order, "error": last_error})
 
-
-import qrcode # pip install qrcode pillow
+import qrcode  # pip install qrcode pillow
 import base64
 from io import BytesIO
+
 
 def generate_qr_code(url):
     qr = qrcode.QRCode(
@@ -222,45 +255,179 @@ def generate_qr_code(url):
     encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return encoded_image
 
+
 import json
 from django.http import HttpResponse
+
+from functools import reduce
+
 def order(request, *args, **kwargs):
-    order = Order.objects.filter(user=request.user, order_placed=False).first()
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    order = Order.objects.filter(id=kwargs.get("order_id")).first()
+
+    if not order:
+        request.session["error"] = "Order does not exist"
+        return redirect(request.META.get("HTTP_REFERER"))
+
+    if request.GET.get("action") == "apply_voucher":
+        voucher_code = request.GET.get("voucher_code")
+        voucher = Voucher.objects.filter(code=voucher_code).first()
+        if voucher and voucher.is_valid():
+            order.vouchers.add(voucher)
+            order.save()
+            return redirect(request.META.get("HTTP_REFERER"))
+        else:
+            request.session["error"] = "Invalid voucher code"
+            return redirect(request.META.get("HTTP_REFERER"))
+
+    if request.GET.get("action") == "update" or request.GET.get("action") == "checkout":
+        # update quantities
+        if request.GET.get("items"):
+            order_items = json.loads(request.GET.get("items"))
+            print(order_items)
+            for item in order.items.all():
+                item.quantity = int(
+                    [x for x in order_items if x.get("id") == item.id][0].get(
+                        "quantity"
+                    )
+                )
+                if item.quantity > item.product.quantity:
+                    request.session["error"] = (
+                        "Not enough in stock. Remaining quantity of "
+                        + item.product.name
+                        + ": "
+                        + str(item.product.quantity)
+                    )
+                    return redirect(request.META.get("HTTP_REFERER"))
+                item.save()
+        if request.GET.get("order"):
+            try:
+                print(json.loads(request.GET.get("order")))
+                updated_order = json.loads(request.GET.get("order"))
+                order.address = updated_order["address"]
+                order.payment = updated_order["payment"]
+                order.redeemed_points = updated_order["redeemed_points"]
+                order.save()
+            except Exception as e:
+                print(e)
+                return HttpResponse(e, status=500)
+        if request.GET.get("action") == "checkout":
+            return redirect("/checkout")
+        else:
+            return redirect(request.META.get("HTTP_REFERER"))
     if request.GET.get("action") == "remove_item":
         try:
             order.items.filter(id=request.GET.get("item_id")).delete()
-            return redirect('/cart')
+            return redirect("/cart")
         except Exception as e:
             print(e)
             return HttpResponse(e, status=500)
 
     if request.GET.get("action") == "place":
         if order.items.count() == 0:
+            print("Cart is empty")
             request.session["error"] = "Cart is empty"
             return redirect(request.META.get("HTTP_REFERER"))
-        # update quantities
-        order_items = json.loads(request.GET.get('items'))
-        print(order_items)
-        for item in order.items.all():
-            item.quantity = [x for x in order_items if x.get('item_id') == item.id][0].get('quantity')
-            if item.quantity > item.product.quantity:
-                request.session["error"] = "Not enough in stock. Remaining quantity of "+item.product.name+": "+str(item.product.quantity)
-                return redirect(request.META.get("HTTP_REFERER"))
-            item.save()
+
         try:
-            order.order_placed = True
+            cost = 0
             for item in order.items.all():
+                cost += item.quantity * item.product.price
                 item.product.quantity -= item.quantity
                 item.product.save()
+            for voucher in order.vouchers.all():
+                voucher.current_usage += 1
+                voucher.save()
+
+            request.user.points -= order.redeemed_points
+            request.user.points += cost / 10
+            request.user.save()
+            order.order_placed = True
             order.save()
-            return redirect('/order/'+str(order.id))
+            return redirect("/order/" + str(order.id))
         except Exception as e:
             print(e)
-            return 
+            request.session["error"] = "Error: " + str(e)
+            return redirect(request.META.get("HTTP_REFERER"))
 
     order = Order.objects.filter(id=kwargs.get("order_id")).first()
-    return render(request, "order.html", {'order': order, 'qr_code': generate_qr_code(request.build_absolute_uri('/order/'+str(order.id)))})
+
+    items = []
+    for item in order.items.all():
+        items.append(
+            {
+                **model_to_dict(item),
+                "price": item.product.price,
+                "product": {
+                    **model_to_dict(item.product),
+                    "category": model_to_dict(item.product.category),
+                },
+            }
+        )
+    vouchers = order.vouchers.all()
+
+    return render(
+        request,
+        "order.html",
+        {
+            "order": order,
+            "items": items,
+            "vouchers": vouchers,
+            "qr_code": generate_qr_code(
+                request.build_absolute_uri("/order/" + str(order.id))
+            ),
+            "error": request.session.pop("error", None),
+        },
+    )
+
 
 def orders(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    
     orders = Order.objects.filter(user=request.user)
-    return render(request, "orders.html", {'orders': orders})
+    return render(request, "orders.html", {"orders": orders})
+
+
+from django.forms.models import model_to_dict
+
+
+def checkout(request, *args, **kwargs):
+    order = Order.objects.filter(user=request.user, order_placed=False).first()
+
+    if not order:
+        request.session["error"] = "Order does not exist"
+        return redirect("/cart")
+
+    if order.items.count() == 0:
+        print("Cart is empty")
+        request.session["error"] = "Cart is empty"
+        return redirect("/cart")
+
+    items = []
+    for item in order.items.all():
+        items.append(
+            {
+                **model_to_dict(item),
+                "price": item.product.price,
+                "product": {
+                    **model_to_dict(item.product),
+                    "category": model_to_dict(item.product.category),
+                },
+            }
+        )
+    vouchers = order.vouchers.all()
+
+    return render(
+        request,
+        "checkout.html",
+        {
+            "order": order,
+            "items": items,
+            "vouchers": vouchers,
+            "error": request.session.pop("error", None),
+        },
+    )

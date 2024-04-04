@@ -6,7 +6,7 @@
 @import url(animate.min.css);
 @import url(normalize.css);
 @import url(icomoon.css);
-@import url(css/font-awesome.min.css);
+@import url(font-awesome.min.css);
 @import url(meanmenu.css);
 @import url(owl.carousel.min.css);
 @import url(swiper.min.css);
@@ -34,7 +34,7 @@ body {
     --shadow-color: #f0f0f0;
 }
 
-body.tw-dark {
+body.dark {
     --bg-color: #1c1c1c;
     --text-color: #fff;
     --text-color-secondary: #999999;
@@ -49,6 +49,11 @@ body {
     font-weight: normal;
     overflow-x: hidden;
     font-family: 'Poppins', sans-serif;
+}
+
+input{
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 a {

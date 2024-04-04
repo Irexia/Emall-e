@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import login_info, Item, Poll, Choice, Product, Order, OrderItem, Category
+from .models import login_info, Item, Poll, Choice, Product, Order, OrderItem, Category, Voucher
 
 
 # Register your models here.
@@ -28,3 +28,5 @@ admin.site.register(Category)
 admin.site.register(Product)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem)
+
+admin.site.register(Voucher)

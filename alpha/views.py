@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Category
-from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Voucher
+from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Voucher, Chatbot
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm, UserEditForm
@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
+from .chatbot.train import train
+from django.http import HttpResponse
 
 
 # def index(request):
@@ -248,26 +250,26 @@ def cart(request, *args, **kwargs):
     )
 
 
-import qrcode  # pip install qrcode pillow
-import base64
-from io import BytesIO
+# import qrcode  # pip install qrcode pillow
+# import base64
+# from io import BytesIO
 
 
-def generate_qr_code(url):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(url)
-    qr.make(fit=True)
+# def generate_qr_code(url):
+#     qr = qrcode.QRCode(
+#         version=1,
+#         error_correction=qrcode.constants.ERROR_CORRECT_L,
+#         box_size=10,
+#         border=4,
+#     )
+#     qr.add_data(url)
+#     qr.make(fit=True)
 
-    img = qr.make_image(fill_color="black", back_color="white")
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
-    return encoded_image
+#     img = qr.make_image(fill_color="black", back_color="white")
+#     buffered = BytesIO()
+#     img.save(buffered, format="PNG")
+#     encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
+#     return encoded_image
 
 
 import json
@@ -488,3 +490,26 @@ def checkout(request, *args, **kwargs):
             "error": request.session.pop("error", None),
         },
     )
+def chatbot(request):
+
+    chats = train()
+
+    for i in range(len(chats)):
+        if i % 2 == 0:
+            Chatbot.objects.get_or_create(user=chats[i], bot=chats[i + 1])
+
+    return render(request, "chatbot.html")
+
+
+def chatbotResponse(request):
+    userMessage = request.GET.get("userMessage")
+    # chatbotResponse = str(bot.get_response(userMessage))
+
+    try:
+        chatbotRes = Chatbot.objects.get(user=userMessage)
+        return HttpResponse(chatbotRes.bot)
+    except:
+        return HttpResponse("Unfortunately, I do not have that information")
+
+
+# chatbot

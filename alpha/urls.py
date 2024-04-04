@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, product_search_view, edit_user_details, delete_user, custom_logout
+from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, product_search_view, edit_user_details, delete_user, custom_logout,chatbot,chatbotResponse
 from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, checkout
 from django.conf.urls.static import static
 from django.conf import settings
@@ -24,6 +24,8 @@ urlpatterns = [
     path('delete/', delete_user, name='delete_user'),
     path('logout/', custom_logout, name='logout'),
     path("checkout", checkout, name="checkout"),
+    path("chatbot/", chatbot, name="chatbot"),
+    path("chatbot/chatbotResponse/", chatbotResponse, name="chatbotResponse"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

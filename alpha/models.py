@@ -124,7 +124,9 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.product.name} - {self.quantity}"
 
-
+class Chatbot(models.Model):
+    user = models.CharField(max_length=255)
+    bot = models.CharField(max_length=255)
 
 # Explicitly declare app_label
 class Meta:

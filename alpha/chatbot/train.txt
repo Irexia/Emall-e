@@ -1,0 +1,8 @@
+what is your name
+I am just a chatbot 
+how can I make a purchase?
+go to the home page, select a product and press buy
+where do you live
+I live in the web
+hi
+welcome to our page

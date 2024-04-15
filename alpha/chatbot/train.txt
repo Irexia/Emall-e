@@ -4,5 +4,10 @@ how can I make a purchase?
 go to the home page, select a product and press buy
 where do you live
 I live in the web
+<<<<<<< Updated upstream
 hi
 welcome to our page
+=======
+Hi
+Hello, how can I help you today?
+>>>>>>> Stashed changes

@@ -31,9 +31,11 @@
         }
     </style>
     
+   <script src="https://cdn.tailwindcss.com"></script>
+   <script>tailwind.config = {prefix: 'tw-', darkMode: 'class', corePlugins: {preflight: false}}</script>
 </head>
 <body class="">
-    <div class="bg-zinc-100 dark:bg-zinc-900 h-screen overflow-auto">
+    <div class="tw-bg-zinc-100 dark:tw-bg-zinc-900 tw-h-screen tw-overflow-auto">
     {% if form.errors %}
     <div class="alert alert-danger" role="alert">
         <strong>Error:</strong> Please correct the following issues:
@@ -48,7 +50,7 @@
 <div class="container-fluid h-100">
     <div class="row align-items-center justify-content-center h-100">
         <div class="col-md-6">
-            <div class="card bg-white dark:bg-zinc-800">
+            <div class="card tw-bg-white dark:tw-bg-zinc-800">
                 <div class="card-body">
                     <h2 class="card-title text-center"><i class="fa fa-user-plus"></i> Signup</h2>
 
@@ -153,24 +155,24 @@
             let switchEl = document.querySelector('.btn-circle');
             let dark = localStorage.getItem('dark')
             if (dark === 'true') {
-               document.body.classList.add('dark');
+               document.body.classList.add('tw-dark');
                switchEl.style.transition = "none";
                switchEl.classList.add('active');
                setTimeout(() => {
                   switchEl.style.transition = "all 0.5s ease";
                }, 1);
             } else {
-               document.body.classList.remove('dark');
+               document.body.classList.remove('tw-dark');
             }
          }
          initTheme();
          function toggleDarkMode() {
             let dark = localStorage.getItem('dark')
             if (dark === 'true') {
-               document.body.classList.remove('dark');
+               document.body.classList.remove('tw-dark');
                localStorage.setItem('dark', 'false');
             } else {
-               document.body.classList.add('dark');
+               document.body.classList.add('tw-dark');
                localStorage.setItem('dark', 'true');
             }
          }

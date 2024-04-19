@@ -1,15 +1,29 @@
 from django.shortcuts import render, redirect
 from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Category
-from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Voucher, Chatbot
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
-from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm, UserEditForm
+from .forms import (
+    SignupForm,
+    LoginForm,
+    ForgotPasswordForm,
+    ProductSearchForm,
+    UserEditForm,
+)
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
+
+# ...........
+from .models import Chatbot, ReviewRating
+from .forms import ReviewRatingForm
+from django.template import loader
+
+# train is imported to read the train.txt file
 from .chatbot.train import train
-from django.http import HttpResponse
+
+
+# ............
 
 
 # def index(request):
@@ -20,12 +34,26 @@ def index(request):
     products = Product.objects.all()
 
     # Add the leaderboard functionality
-    leaderboard_users = Order.objects.values('user').annotate(total_orders=Count('id')).filter(order_placed=True).order_by('-total_orders')[:5]
+    leaderboard_users = (
+        Order.objects.values("user")
+        .annotate(total_orders=Count("id"))
+        .filter(order_placed=True)
+        .order_by("-total_orders")[:5]
+    )
 
     # Fetch login_info instances for each user
-    leaderboard_users_info = [login_info.objects.get(id=user['user']) for user in leaderboard_users]
+    leaderboard_users_info = [
+        login_info.objects.get(id=user["user"]) for user in leaderboard_users
+    ]
 
-    return render(request, "index.html", {"products": products, "leaderboard_users": zip(leaderboard_users_info, leaderboard_users)})
+    return render(
+        request,
+        "index.html",
+        {
+            "products": products,
+            "leaderboard_users": zip(leaderboard_users_info, leaderboard_users),
+        },
+    )
 
 
 def electronic_view(request):
@@ -189,7 +217,9 @@ def vote_poll(request, *args, **kwargs):
 
 def product(request, product_id):
     product = Product.objects.get(id=product_id)
-    return render(request, "product.html", {"product": product})
+    review = ReviewRating.objects.filter(product_id=product_id)
+
+    return render(request, "product.html", {"product": product, "review": review})
 
 
 def cart(request, *args, **kwargs):
@@ -197,24 +227,8 @@ def cart(request, *args, **kwargs):
         return redirect("login")
 
     order = Order.objects.filter(user=request.user, order_placed=False).first()
-
     if not order:
         order = Order.objects.create(user=request.user)
-
-    items = []
-    for item in order.items.all():
-        items.append(
-            {
-                **model_to_dict(item),
-                "price": item.product.price,
-                "product": {
-                    **model_to_dict(item.product),
-                    "category": model_to_dict(item.product.category),
-                },
-            }
-        )
-    vouchers = order.vouchers.all()
-    print("vouchers", items)
 
     if request.GET.get("action") == "add":
         try:
@@ -238,16 +252,10 @@ def cart(request, *args, **kwargs):
         except Exception as e:
             print(e)
 
-    return render(
-        request,
-        "cart.html",
-        {
-            "order": order,
-            "error": request.session.pop("error", None),
-            "items": items,
-            "vouchers": vouchers,
-        },
-    )
+    last_error = request.session.get("error")
+    request.session["error"] = None
+
+    return render(request, "cart.html", {"order": order, "error": last_error})
 
 
 # import qrcode  # pip install qrcode pillow
@@ -275,65 +283,9 @@ def cart(request, *args, **kwargs):
 import json
 from django.http import HttpResponse
 
-from functools import reduce
 
 def order(request, *args, **kwargs):
-
-    if not request.user.is_authenticated:
-        return redirect("login")
-
-    order = Order.objects.filter(id=kwargs.get("order_id")).first()
-
-    if not order:
-        request.session["error"] = "Order does not exist"
-        return redirect(request.META.get("HTTP_REFERER"))
-
-    if request.GET.get("action") == "apply_voucher":
-        voucher_code = request.GET.get("voucher_code")
-        voucher = Voucher.objects.filter(code=voucher_code).first()
-        if voucher and voucher.is_valid():
-            order.vouchers.add(voucher)
-            order.save()
-            return redirect(request.META.get("HTTP_REFERER"))
-        else:
-            request.session["error"] = "Invalid voucher code"
-            return redirect(request.META.get("HTTP_REFERER"))
-
-    if request.GET.get("action") == "update" or request.GET.get("action") == "checkout":
-        # update quantities
-        if request.GET.get("items"):
-            order_items = json.loads(request.GET.get("items"))
-            print(order_items)
-            for item in order.items.all():
-                item.quantity = int(
-                    [x for x in order_items if x.get("id") == item.id][0].get(
-                        "quantity"
-                    )
-                )
-                if item.quantity > item.product.quantity:
-                    request.session["error"] = (
-                        "Not enough in stock. Remaining quantity of "
-                        + item.product.name
-                        + ": "
-                        + str(item.product.quantity)
-                    )
-                    return redirect(request.META.get("HTTP_REFERER"))
-                item.save()
-        if request.GET.get("order"):
-            try:
-                print(json.loads(request.GET.get("order")))
-                updated_order = json.loads(request.GET.get("order"))
-                order.address = updated_order["address"]
-                order.payment = updated_order["payment"]
-                order.redeemed_points = updated_order["redeemed_points"]
-                order.save()
-            except Exception as e:
-                print(e)
-                return HttpResponse(e, status=500)
-        if request.GET.get("action") == "checkout":
-            return redirect("/checkout")
-        else:
-            return redirect(request.META.get("HTTP_REFERER"))
+    order = Order.objects.filter(user=request.user, order_placed=False).first()
     if request.GET.get("action") == "remove_item":
         try:
             order.items.filter(id=request.GET.get("item_id")).delete()
@@ -344,68 +296,52 @@ def order(request, *args, **kwargs):
 
     if request.GET.get("action") == "place":
         if order.items.count() == 0:
-            print("Cart is empty")
             request.session["error"] = "Cart is empty"
             return redirect(request.META.get("HTTP_REFERER"))
-
+        # update quantities
+        order_items = json.loads(request.GET.get("items"))
+        print(order_items)
+        for item in order.items.all():
+            item.quantity = [x for x in order_items if x.get("item_id") == item.id][
+                0
+            ].get("quantity")
+            if item.quantity > item.product.quantity:
+                request.session["error"] = (
+                    "Not enough in stock. Remaining quantity of "
+                    + item.product.name
+                    + ": "
+                    + str(item.product.quantity)
+                )
+                return redirect(request.META.get("HTTP_REFERER"))
+            item.save()
         try:
-            cost = 0
+            order.order_placed = True
             for item in order.items.all():
-                cost += item.quantity * item.product.price
                 item.product.quantity -= item.quantity
                 item.product.save()
-            for voucher in order.vouchers.all():
-                voucher.current_usage += 1
-                voucher.save()
-
-            request.user.points -= order.redeemed_points
-            request.user.points += cost / 10
-            request.user.save()
-            order.order_placed = True
             order.save()
             return redirect("/order/" + str(order.id))
         except Exception as e:
             print(e)
-            request.session["error"] = "Error: " + str(e)
-            return redirect(request.META.get("HTTP_REFERER"))
+            return
 
     order = Order.objects.filter(id=kwargs.get("order_id")).first()
-
-    items = []
-    for item in order.items.all():
-        items.append(
-            {
-                **model_to_dict(item),
-                "price": item.product.price,
-                "product": {
-                    **model_to_dict(item.product),
-                    "category": model_to_dict(item.product.category),
-                },
-            }
-        )
-    vouchers = order.vouchers.all()
-
     return render(
         request,
         "order.html",
         {
             "order": order,
-            "items": items,
-            "vouchers": vouchers,
             "qr_code": generate_qr_code(
                 request.build_absolute_uri("/order/" + str(order.id))
             ),
-            "error": request.session.pop("error", None),
         },
     )
 
 
 def orders(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect("login")
-    
     orders = Order.objects.filter(user=request.user)
-    return render(request, "orders.html", {'orders': orders})
+    return render(request, "orders.html", {"orders": orders})
+
 
 # advanced search
 def product_search_view(request):
@@ -416,80 +352,106 @@ def product_search_view(request):
         queryset = form.filter_queryset(queryset)
 
     context = {
-        'form': form,
-        'results': queryset,
+        "form": form,
+        "results": queryset,
     }
 
-    return render(request, 'product_search.html', context)
+    return render(request, "product_search.html", context)
+
 
 def edit_user_details(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('user_page')  # Redirect to profile page after successful update
+            return redirect(
+                "user_page"
+            )  # Redirect to profile page after successful update
     else:
         form = UserEditForm(instance=user)
-    return render(request, 'edit_user_details.html', {'form': form})
+    return render(request, "edit_user_details.html", {"form": form})
+
 
 @login_required
 def delete_user(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == "POST":
         user.delete()
-        return redirect('index')  # Redirect to home page after deletion
-    return render(request, 'delete_confirmation.html')
+        return redirect("index")  # Redirect to home page after deletion
+    return render(request, "delete_confirmation.html")
+
 
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 
+
 def custom_logout(request):
     logout(request)
     # Redirect to desired URL after logout
-    return redirect('index')  # Replace 'index' with the name of your desired URL pattern
-    return render(request, "orders.html", {"orders": orders})
+    return redirect(
+        "index"
+    )  # Replace 'index' with the name of your desired URL pattern
 
 
-from django.forms.models import model_to_dict
+# .............
+# wishlist
 
 
-def checkout(request, *args, **kwargs):
-    order = Order.objects.filter(user=request.user, order_placed=False).first()
+def wishlist(request, product_id):
+    print("this is the product Id", product_id)
 
-    if not order:
-        request.session["error"] = "Order does not exist"
-        return redirect("/cart")
+    product = Product.objects.get(id=product_id)
+    state = product.wishlist
+    print(state)
+    if state == "False":
+        product.wishlist = "True"
+    else:
+        product.wishlist = "False"
+    print(product.wishlist)
+    product.save()
 
-    if order.items.count() == 0:
-        print("Cart is empty")
-        request.session["error"] = "Cart is empty"
-        return redirect("/cart")
+    return redirect("index")
 
-    items = []
-    for item in order.items.all():
-        items.append(
-            {
-                **model_to_dict(item),
-                "price": item.product.price,
-                "product": {
-                    **model_to_dict(item.product),
-                    "category": model_to_dict(item.product.category),
-                },
-            }
-        )
-    vouchers = order.vouchers.all()
 
-    return render(
-        request,
-        "checkout.html",
-        {
-            "order": order,
-            "items": items,
-            "vouchers": vouchers,
-            "error": request.session.pop("error", None),
-        },
-    )
+def go_wishlist(request):
+    wishlist_items = Product.objects.filter(wishlist="True").values()
+    template = loader.get_template("wishlist.html")
+    context = {"myWishlist": wishlist_items}
+    # print(wishlist_items)
+    # access the context in wishlist.html using myWishlist
+    return HttpResponse(template.render(context, request))
+
+
+# compare
+def compare(request, product_id):
+    print("this is the product Id", product_id)
+
+    product = Product.objects.get(id=product_id)
+    state = product.compare
+    print(state)
+    if state == "False":
+        product.compare = "True"
+    else:
+        product.compare = "False"
+    print(product.compare)
+    product.save()
+
+    return redirect("index")
+
+
+def go_compare(request):
+    compare_items = Product.objects.filter(compare="True").values()
+    template = loader.get_template("comparison_window.html")
+    context = {"myComparisonlist": compare_items}
+    print(compare_items)
+    # access the context in wishlist.html using myWishlist
+    return HttpResponse(template.render(context, request))
+
+
+# chatbot
+
+
 def chatbot(request):
 
     chats = train()
@@ -512,4 +474,44 @@ def chatbotResponse(request):
         return HttpResponse("Unfortunately, I do not have that information")
 
 
-# chatbot
+# reviewRating
+def go_reviewRating(request):
+    return render(request, "review_rating.html")
+
+
+def reviewRating(request, product_id):
+
+    product = Product.objects.get(id=product_id)
+
+    # print(product.id)
+
+    # print("/////////////////////////////////////")
+    if request.method == "POST":
+        form = ReviewRatingForm(request.POST)
+        if form.is_valid():
+            # saving review in ReviewRating table
+            data = ReviewRating()
+            data.review = form.cleaned_data["review"]
+            data.rating = form.cleaned_data["rating"]
+            data.product = product
+            data.save()
+            # calculating new rating
+            review = ReviewRating.objects.filter(product_id=product_id)
+            sum = 0
+            rating_sum = 0
+            for i in review:
+                rating_sum += i.rating
+                sum += 1
+            rating_avg = rating_sum / sum
+            product.rating = rating_avg
+            product.save()
+
+            messages.success(request, "Added Review")
+            return render(
+                request, "product.html", {"product": product, "review": review}
+            )
+        messages.error("form is not valid")
+        return render(request, "product.html", {"product": product})
+
+
+# ............

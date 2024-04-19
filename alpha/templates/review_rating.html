@@ -1,0 +1,70 @@
+{% load static %}
+
+<head>
+    <link
+   rel="stylesheet"
+   type="text/css"
+   href="{% static 'css/reviewRating.css' %}"
+   />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<br>
+<div class = "row">
+    <div class = "col-md-9">
+        <header>
+            <h2>
+                Your Feedback:
+            </h2>
+        </header>
+        <form action="{% url 'reviewRating' product.id%}" method="post">
+            {% csrf_token %}
+
+            <div>
+                {% comment %} rating {% endcomment %}
+                Rating:
+                <br>
+                <div class="rate">
+                    <input type="radio" name="rating" id="rating10" value = "5" required> <label for="rating10" title = "5"></label>
+                    <input type="radio" name="rating" id="rating9" value = "4.5" required> <label for="rating9" title = "4.5" class = "half"></label>
+                    <input type="radio" name="rating" id="rating8" value = "4" required> <label for="rating8" title = "4"></label>
+                    <input type="radio" name="rating" id="rating7" value = "3.5" required> <label for="rating7" title = "3.5" class = "half"></label>
+                    <input type="radio" name="rating" id="rating6" value = "3" required> <label for="rating6" title = "3"></label>
+                    <input type="radio" name="rating" id="rating5" value = "2.5" required> <label for="rating5" title = "2.5" class = "half"></label>
+                    <input type="radio" name="rating" id="rating4" value = "2" required> <label for="rating4" title = "2"></label>
+                    <input type="radio" name="rating" id="rating3" value = "1.5" required> <label for="rating3" title = "1.5" class = "half"></label>
+                    <input type="radio" name="rating" id="rating2" value = "1" required> <label for="rating2" title = "1"></label>
+                    <input type="radio" name="rating" id="rating1" value = ".5" required> <label for="rating1" title = ".5" class = "half"></label>
+
+                </div>
+                <br>
+                {% comment %} review {% endcomment %}
+                Comment:
+                <textarea name="review" rows="4" class="form-control"></textarea>
+                <br>
+                <input type="submit" value="Submit Review" class = "btn btn-primary">
+        
+            </div>
+        </form>
+        <br>
+        <h2>
+            Customer Reviews:
+        </h2>
+        {% if review %}
+        {% for comment in review%}
+        <div class="card"style="border-radius: 10px; padding: 5px;margin-bottom: 15px;">
+            
+            <div class="card-body">
+                <p>
+                    {{comment.review}}
+                </p>
+              <p>Rating: {{comment.rating}}/5</p>
+            </div>
+          </div>
+            
+
+        
+        {% endfor %}
+        {% endif %}
+        
+    </div>
+</div>

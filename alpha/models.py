@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.urls import reverse
+
 SECURITY_QUESTION_CHOICES = [
     ("q1", "What is your favorite color?"),
     ("q2", "What is the name of your first pet?"),
@@ -64,23 +65,36 @@ class Category(models.Model):
 
 import secrets
 
+
 class Voucher(models.Model):
     code = models.CharField(max_length=20, unique=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2)
     valid_from = models.DateTimeField(default=timezone.now)
-    valid_to = models.DateTimeField(default=timezone.now() + timezone.timedelta(days=30))
+    valid_to = models.DateTimeField(
+        default=timezone.now() + timezone.timedelta(days=30)
+    )
     is_active = models.BooleanField(default=True)
-    max_usage = models.IntegerField(default=1)  # Maximum number of times voucher can be used
-    current_usage = models.IntegerField(default=0)  # Current number of times voucher has been used
+    max_usage = models.IntegerField(
+        default=1
+    )  # Maximum number of times voucher can be used
+    current_usage = models.IntegerField(
+        default=0
+    )  # Current number of times voucher has been used
 
     def is_valid(self):
         now = timezone.now()
-        return self.is_active and self.valid_from <= now and self.valid_to >= now and self.current_usage < self.max_usage
+        return (
+            self.is_active
+            and self.valid_from <= now
+            and self.valid_to >= now
+            and self.current_usage < self.max_usage
+        )
 
     def save(self, *args, **kwargs):
         if not self.code:  # Generate code only if not provided
             self.code = self.generate_unique_code()
         super().save(*args, **kwargs)
+
 
 class Product(models.Model):
     category = models.ForeignKey(
@@ -93,12 +107,19 @@ class Product(models.Model):
         upload_to="uploads/", null=True, blank=True, default="no-image.png"
     )
     quantity = models.IntegerField()
+    # wishlist
+    wishlist = models.CharField(default="False", max_length=50)
+    # compare
+    compare = models.CharField(default="False", max_length=50)
+    # rating
+    rating = models.FloatField(null=True)
 
     def __str__(self):
         return f"{self.name}"
-    #added to fetch advanced-search url
+
+    # added to fetch advanced-search url
     def get_absolute_url(self):
-        return reverse('product_details', args=[str(self.id)])
+        return reverse("product_details", args=[str(self.id)])
 
 
 class Order(models.Model):
@@ -124,9 +145,22 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.product.name} - {self.quantity}"
 
+
+# Chatbot
 class Chatbot(models.Model):
     user = models.CharField(max_length=255)
     bot = models.CharField(max_length=255)
+
+
+# review rating
+class ReviewRating(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    rating = models.FloatField()
+    review = models.TextField(max_length=500, null=True)
+
+    def __str__(self):
+        return f"{self.product}: {self.rating}\n{self.review}"
+
 
 # Explicitly declare app_label
 class Meta:

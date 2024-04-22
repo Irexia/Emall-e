@@ -111,6 +111,38 @@
                         <div class="flex-grow-1"></div>
                         <div class="btn_main">
                            <div class="buy_bt"><a href="{{'product'}}/{{product.id}}" class="h-100">Buy Now</a></div>
+                           {% if product.wishlist == "False" %}
+                    <a href="wishlist/{{ product.id }}/">
+                      <img
+                        class="w-6 h-5 mt-0 aspect-ratio:1"
+                        src="{% static 'images/star_hollow.png' %}"
+                      />
+                    </a>
+                    {% else %}
+                    <a href="wishlist/{{ product.id }}/">
+                      <img
+                        class="w-6 h-5 mt-0 aspect-ratio:1"
+                        src="{% static 'images/star_filled.png' %}"
+                      />
+                    </a>
+                    {%endif%}
+                    {% comment %} ///////////////////////////////////////////////////  {% endcomment %}
+                    <div class="p-2"></div>
+                    {% if product.compare == "False" %}
+                    <a href="{{ 'compare' }}/{{ product.id }}">
+                      <img
+                        class="w-6 h-5 mt-0"
+                        src="{% static 'images/compare_hollow.png' %}"
+                      />
+                    </a>
+                    {% else %}
+                    <a href="{{ 'compare' }}/{{ product.id }}">
+                      <img
+                        class="w-6 h-5 mt-0"
+                        src="{% static 'images/compare_filled.png' %}"
+                      />
+                    </a>
+                    {% endif %}
                            {% comment %} <div class="seemore_bt"><a href="#">See More</a></div> {% endcomment %}
                         </div>
                      </div>

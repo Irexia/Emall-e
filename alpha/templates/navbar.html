@@ -53,6 +53,8 @@
    tbody tr:hover {
       background-color: #f26522 !important;
    }
+
+
 </style>
 
 <div class="banner_bg_main">
@@ -68,6 +70,7 @@
                      <li><a href="#">Gift Ideas</a></li>
                      <li><a href="#">New Releases</a></li>
                      <li><a href="#">Today's Deals</a></li> {% endcomment %}
+                     <li><a id="toggleLeaderboardButton" href={% url 'chatbot' %} style="padding: 10px 20px; background-color: #f26522; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Chatbot</a></li>
                      {% if is_index_page %}
                         <li><button id="toggleLeaderboardButton" onclick="toggleLeaderboard()" style="padding: 10px 20px; background-color: #f26522; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Toggle Leaderboard</button></li>
                      {% endif %}
@@ -116,6 +119,7 @@
             <div id="mySidenav" class="sidenav" style="z-index: 10;">
                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
                <a href="{% url 'index' %}">Home</a>
+               <a href="{% url 'go_compare' %}">Comparison Window</a>
                {% comment %} <a href="{% url 'electronic' %}">Electronic</a> {% endcomment %}
                <!-- <a href="fashion.html">Fashion</a> -->
                <!-- <a href="electronic.html">Electronic</a> -->

@@ -60,6 +60,9 @@
             <div class="w-full max-w-lg mx-auto mt-5 md:ml-8 md:mt-0 md:w-1/2 p-6">
                <h3 class="text-gray-700 dark:text-gray-200 uppercase text-lg">{{product.name}}</h3>
                <div class="text-gray-500">
+                  <span class="text-md font-bold">Rating: </span>{{product.rating}}
+               </div>
+               <div class="text-gray-500">
                   <span class="text-md font-bold">Price: </span>${{product.price}}
                </div>
                <div class="text-gray-500">
@@ -103,6 +106,7 @@
                </div>
             </div>
          </div>
+         {% include "review_rating.html" %}
       </div>
       {% endif %}
 

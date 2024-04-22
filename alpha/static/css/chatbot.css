@@ -6,11 +6,13 @@
   border-radius: 10px;
   border: 1px solid gray;
   padding: 10px;
+  background-color: white;
 }
 .botText {
   font-family: monospace;
   font-size: 14px;
   text-align: left;
+  
   line-height: 25px;
   color: rgb(109, 111, 109);
 }
@@ -18,12 +20,14 @@
 #userInput {
   margin-left: auto;
   margin-right: auto;
+  
   margin-top: 40px;
   width: 70%;
   text-align: center;
 }
 
 #textInput {
+  border-radius: 10px;
   border: 3px solid white;
   border-bottom: 3px solid grey;
   font-family: monospace;

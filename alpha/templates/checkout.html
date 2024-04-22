@@ -214,8 +214,18 @@
          <button class="p-2 rounded bg-blue-400 text-white dark:bg-blue-700 dark:text-white"
             onclick="window.location.href='/cart'">Back to Cart</button>
          <div class="mx-1"></div>
-         <button class="p-2 rounded bg-blue-400 text-white dark:bg-blue-700 dark:text-white"
-            onclick="window.location.href='/order/{{ order.id }}/?action=place'">Purchase</button>
+         {% comment %} <button class="p-2 rounded bg-blue-400 text-white dark:bg-blue-700 dark:text-white"
+            onclick="window.location.href='/order/{{ order.id }}/?action=place'">Purchase</button> {% endcomment %}
+            <button class="p-2 rounded bg-blue-400 text-white dark:bg-blue-700 dark:text-white" @click="(e)=>{ e.preventDefault();
+               if(!order.address || !order.payment.payment_method || 
+               (order.payment.payment_method == 'card'
+               && (!order.payment.payment_info.name
+               || !order.payment.payment_info.number
+               || !order.payment.payment_info.code))
+               ) {alert('All  fields required');
+               return;}
+               window.location.href='/order/{{ order.id }}/?action=place'
+               }">Purchase</button>
          <div class="mx-1"></div>
       </div>
    </div>

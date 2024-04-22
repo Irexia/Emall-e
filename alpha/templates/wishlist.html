@@ -70,7 +70,7 @@
 
   <body>
     {% include 'navbar.html' %} {% comment %} start writing here {% endcomment%}
-    <div class="container" style="max-width: 800px">
+    <div class="container" id="wishlist" style="max-width: 800px">
       <!-- <div x-text="JSON.stringify(vouchers,0,2)"></div> -->
 
       <div class="text-3xl font-bold">Wishlist</div>
@@ -143,7 +143,7 @@
     <div class="footer_section layout_padding">
       <div class="container">
         <!-- <div class="footer_logo"><a href="index.html"><img src="{% static 'images/footer-logo.png' %}"></a></div> -->
-        <div class="input_bt">
+        {% comment %} <div class="input_bt">
           <input
             type="text"
             class="mail_bt"
@@ -162,7 +162,7 @@
             <li><a href="#">Today's Deals</a></li>
             <li><a href="#">Customer Service</a></li>
           </ul>
-        </div>
+        </div> {% endcomment %}
         <div class="location_main">
           Help Line Number : <a href="#">+1 1800 1200 1200</a>
         </div>

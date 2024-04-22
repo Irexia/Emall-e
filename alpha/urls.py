@@ -1,6 +1,51 @@
 from django.urls import path
-from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, product_search_view, edit_user_details, delete_user, custom_logout,chatbot,chatbotResponse
-from .views import signup, login_view, forgot_password, index, set_new_password, user_page, polls, vote_poll, electronic_view, product, cart, order, orders, checkout
+from .views import (
+    signup,
+    login_view,
+    forgot_password,
+    index,
+    set_new_password,
+    user_page,
+    polls,
+    vote_poll,
+    electronic_view,
+    product,
+    cart,
+    order,
+    orders,
+    product_search_view,
+    edit_user_details,
+    delete_user,
+    custom_logout,
+    chatbot,
+    chatbotResponse,
+)
+from .views import (
+    signup,
+    login_view,
+    forgot_password,
+    index,
+    set_new_password,
+    user_page,
+    polls,
+    vote_poll,
+    electronic_view,
+    product,
+    cart,
+    order,
+    orders,
+    checkout,
+)
+from .views import (
+    chatbot,
+    chatbotResponse,
+    wishlist,
+    compare,
+    go_wishlist,
+    go_compare,
+    go_reviewRating,
+    reviewRating,
+)
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth import views as auth_views
@@ -19,13 +64,23 @@ urlpatterns = [
     path("cart/", cart, name="cart"),
     path("orders", orders, name="orders"),
     path("order/<int:order_id>/", order, name="order"),
-    path('product-search/', product_search_view, name='product_search'),
-    path('edit/', edit_user_details, name='edit_user_details'),
-    path('delete/', delete_user, name='delete_user'),
-    path('logout/', custom_logout, name='logout'),
+    path("product-search/", product_search_view, name="product_search"),
+    path("edit/", edit_user_details, name="edit_user_details"),
+    path("delete/", delete_user, name="delete_user"),
+    path("logout/", custom_logout, name="logout"),
     path("checkout", checkout, name="checkout"),
+    # chatbot
     path("chatbot/", chatbot, name="chatbot"),
     path("chatbot/chatbotResponse/", chatbotResponse, name="chatbotResponse"),
+    # wishlist
+    path("wishlist/", go_wishlist, name="go_wishlist"),
+    path("wishlist/<int:product_id>/", wishlist, name="wishlist"),
+    # compare
+    path("compare/", go_compare, name="go_compare"),
+    path("compare/<int:product_id>/", compare, name="compare"),
+    # review rating
+    path("reviewRating/", go_reviewRating, name="go_reviewRating"),
+    path("reviewRating/<int:product_id>/", reviewRating, name="reviewRating"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

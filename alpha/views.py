@@ -1,9 +1,25 @@
 from django.shortcuts import render, redirect
 from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Category
-from .models import Item, login_info, Poll, Choice, Product, Order, OrderItem, Voucher, Chatbot
+from .models import (
+    Item,
+    login_info,
+    Poll,
+    Choice,
+    Product,
+    Order,
+    OrderItem,
+    Voucher,
+    Chatbot,
+)
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
-from .forms import SignupForm, LoginForm, ForgotPasswordForm, ProductSearchForm, UserEditForm
+from .forms import (
+    SignupForm,
+    LoginForm,
+    ForgotPasswordForm,
+    ProductSearchForm,
+    UserEditForm,
+)
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
@@ -11,7 +27,16 @@ from django.contrib.auth.decorators import login_required
 from .chatbot.train import train
 from django.http import HttpResponse
 
+# ...........
+from .models import Chatbot, ReviewRating
+from .forms import ReviewRatingForm
+from django.template import loader
 
+# train is imported to read the train.txt file
+from .chatbot.train import train
+
+
+# ............
 # def index(request):
 #     products = Product.objects.all()
 #     return render(request, "index.html", {"products": products})
@@ -20,10 +45,17 @@ def index(request):
     products = Product.objects.all()
 
     # Add the leaderboard functionality
-    leaderboard_users = Order.objects.values('user').annotate(total_orders=Count('id')).filter(order_placed=True).order_by('-total_orders')[:5]
+    leaderboard_users = (
+        Order.objects.values("user")
+        .annotate(total_orders=Count("id"))
+        .filter(order_placed=True)
+        .order_by("-total_orders")[:5]
+    )
 
     # Fetch login_info instances for each user
-    leaderboard_users_info = [login_info.objects.get(id=user['user']) for user in leaderboard_users]
+    leaderboard_users_info = [
+        login_info.objects.get(id=user["user"]) for user in leaderboard_users
+    ]
 
     # Set is_index_page to True
     is_index_page = True
@@ -37,6 +69,7 @@ def index(request):
 
     return render(request, "index.html", context)
 
+
 # def index(request):
 #     # Your existing logic for fetching products
 #     products = Product.objects.all()
@@ -49,6 +82,7 @@ def index(request):
 #     is_index_page = True
 
 #     return render(request, "index.html", {"products": products, "leaderboard_users": zip(leaderboard_users_info, leaderboard_users)})
+
 
 def electronic_view(request):
     return render(request, "electronic.html")
@@ -299,6 +333,7 @@ from django.http import HttpResponse
 
 from functools import reduce
 
+
 def order(request, *args, **kwargs):
 
     if not request.user.is_authenticated:
@@ -425,9 +460,11 @@ def order(request, *args, **kwargs):
 def orders(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect("login")
-    
+
     orders = Order.objects.filter(user=request.user)
-    return render(request, "orders.html", {'orders': orders})
+    return render(request, "orders.html", {"orders": orders})
+
+
 def checkout(request, *args, **kwargs):
     order = Order.objects.filter(user=request.user, order_placed=False).first()
 
@@ -465,6 +502,7 @@ def checkout(request, *args, **kwargs):
         },
     )
 
+
 # advanced search
 def product_search_view(request):
     queryset = Product.objects.all()
@@ -474,50 +512,115 @@ def product_search_view(request):
         queryset = form.filter_queryset(queryset)
 
     context = {
-        'form': form,
-        'results': queryset,
+        "form": form,
+        "results": queryset,
     }
 
-    return render(request, 'product_search.html', context)
+    return render(request, "product_search.html", context)
+
 
 def edit_user_details(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserEditForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('user_page')  # Redirect to profile page after successful update
+            return redirect(
+                "user_page"
+            )  # Redirect to profile page after successful update
     else:
         form = UserEditForm(instance=user)
-    return render(request, 'edit_user_details.html', {'form': form})
+    return render(request, "edit_user_details.html", {"form": form})
+
 
 @login_required
 def delete_user(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == "POST":
         user.delete()
-        return redirect('index')  # Redirect to home page after deletion
-    return render(request, 'delete_confirmation.html')
+        return redirect("index")  # Redirect to home page after deletion
+    return render(request, "delete_confirmation.html")
+
 
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 
+
 def custom_logout(request):
     logout(request)
     # Redirect to desired URL after logout
-    return redirect('index')  # Replace 'index' with the name of your desired URL pattern
+    return redirect(
+        "index"
+    )  # Replace 'index' with the name of your desired URL pattern
     return render(request, "orders.html", {"orders": orders})
 
 
 from django.forms.models import model_to_dict
 
 
+# .............
+# wishlist
+
+
+def wishlist(request, product_id):
+    print("this is the product Id", product_id)
+
+    product = Product.objects.get(id=product_id)
+    state = product.wishlist
+    print(state)
+    if state == "False":
+        product.wishlist = "True"
+    else:
+        product.wishlist = "False"
+    print(product.wishlist)
+    product.save()
+
+    return redirect("index")
+
+
+def go_wishlist(request):
+    wishlist_items = Product.objects.filter(wishlist="True").values()
+    template = loader.get_template("wishlist.html")
+    context = {"myWishlist": wishlist_items}
+    # print(wishlist_items)
+    # access the context in wishlist.html using myWishlist
+    return HttpResponse(template.render(context, request))
+
+
+# compare
+def compare(request, product_id):
+    print("this is the product Id", product_id)
+
+    product = Product.objects.get(id=product_id)
+    state = product.compare
+    print(state)
+    if state == "False":
+        product.compare = "True"
+    else:
+        product.compare = "False"
+    print(product.compare)
+    product.save()
+
+    return redirect("index")
+
+
+def go_compare(request):
+    compare_items = Product.objects.filter(compare="True").values()
+    template = loader.get_template("comparison_window.html")
+    context = {"myComparisonlist": compare_items}
+    print(compare_items)
+    # access the context in wishlist.html using myWishlist
+    return HttpResponse(template.render(context, request))
+
+
+# chatbot
+
 
 def chatbot(request):
 
     chats = train()
 
-    for i in range(len(chats)):
+    for i in range(len(chats) - 1):
         if i % 2 == 0:
             Chatbot.objects.get_or_create(user=chats[i], bot=chats[i + 1])
 
@@ -535,4 +638,44 @@ def chatbotResponse(request):
         return HttpResponse("Unfortunately, I do not have that information")
 
 
-# chatbot
+# reviewRating
+def go_reviewRating(request):
+    return render(request, "review_rating.html")
+
+
+def reviewRating(request, product_id):
+
+    product = Product.objects.get(id=product_id)
+
+    # print(product.id)
+
+    # print("/////////////////////////////////////")
+    if request.method == "POST":
+        form = ReviewRatingForm(request.POST)
+        if form.is_valid():
+            # saving review in ReviewRating table
+            data = ReviewRating()
+            data.review = form.cleaned_data["review"]
+            data.rating = form.cleaned_data["rating"]
+            data.product = product
+            data.save()
+            # calculating new rating
+            review = ReviewRating.objects.filter(product_id=product_id)
+            sum = 0
+            rating_sum = 0
+            for i in review:
+                rating_sum += i.rating
+                sum += 1
+            rating_avg = rating_sum / sum
+            product.rating = rating_avg
+            product.save()
+
+            messages.success(request, "Added Review")
+            return render(
+                request, "product.html", {"product": product, "review": review}
+            )
+        messages.error("form is not valid")
+        return render(request, "product.html", {"product": product})
+
+
+# ............

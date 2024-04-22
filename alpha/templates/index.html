@@ -50,7 +50,7 @@
    <!-- banner bg main start -->
    <div class="banner_bg_main">
       {% include 'navbar.html' %}
-
+      
       <!-- banner section start -->
       <div class="banner_section layout_padding">
          <div class="container">
@@ -59,24 +59,23 @@
                   <div class="carousel-item active">
                      <div class="row">
                         <div class="col-sm-12">
-                           <h1 class="banner_taital">Get Start <br>Your favriot shoping</h1>
-                           <div class="buynow_bt"><a href="#">Buy Now</a></div>
+                           <h1 class="banner_taital">Welcome to <br>Emall-e</h1>
+                           {% comment %} <div class="buynow_bt"><a href="#">Buy Now</a></div> {% endcomment %}
                         </div>
                      </div>
                   </div>
                   <div class="carousel-item">
                      <div class="row">
                         <div class="col-sm-12">
-                           <h1 class="banner_taital">Get Start <br>Your favriot shoping</h1>
-                           <div class="buynow_bt"><a href="#">Buy Now</a></div>
+                           <h1 class="banner_taital">Where <br>some cheeky line</h1>
                         </div>
                      </div>
                   </div>
                   <div class="carousel-item">
                      <div class="row">
                         <div class="col-sm-12">
-                           <h1 class="banner_taital">Get Start <br>Your favriot shoping</h1>
-                           <div class="buynow_bt"><a href="#">Buy Now</a></div>
+                           <h1 class="banner_taital">Feel free to contact us<br>Or<br>Use our slightly efficient chatbot</h1>
+                           {% comment %} <div class="buynow_bt"><a href="#">Buy Now</a></div> {% endcomment %}
                         </div>
                      </div>
                   </div>
@@ -111,8 +110,8 @@
                         <div class="tshirt_img"><img class="w-full" src="{{ product.image.url }}"></div>
                         <div class="flex-grow-1"></div>
                         <div class="btn_main">
-                           <div class="buy_bt"><a href="#">Buy Now</a></div>
-                           <div class="seemore_bt"><a href="#">See More</a></div>
+                           <div class="buy_bt"><a href="{{'product'}}/{{product.id}}" class="h-100">Buy Now</a></div>
+                           {% comment %} <div class="seemore_bt"><a href="#">See More</a></div> {% endcomment %}
                         </div>
                      </div>
                   </div>
@@ -148,7 +147,7 @@
          });
       </script>
 
-   </div>
+   {% comment %} </div>
    <div class="fashion_section">
       <div id="main_slider" class="carousel slide" data-ride="carousel">
          <div class="carousel-inner">
@@ -569,17 +568,17 @@
             <div class="loader"></div>
          </div>
       </div>
-   </div>
+   </div> {% endcomment %}
    <!-- jewellery  section end -->
    <!-- footer section start -->
    <div class="footer_section layout_padding">
       <div class="container">
          <!-- <div class="footer_logo"><a href="index.html"><img src="{% static 'images/footer-logo.png' %}"></a></div> -->
-         <div class="input_bt">
+         {% comment %} <div class="input_bt">
             <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
             <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
-         </div>
-         <div class="footer_menu">
+         </div> {% endcomment %}
+         {% comment %} <div class="footer_menu">
             <ul>
                <li><a href="#">Best Sellers</a></li>
                <li><a href="#">Gift Ideas</a></li>
@@ -587,7 +586,7 @@
                <li><a href="#">Today's Deals</a></li>
                <li><a href="#">Customer Service</a></li>
             </ul>
-         </div>
+         </div> {% endcomment %}
          <div class="location_main">Help Line Number : <a href="#">+1 1800 1200 1200</a></div>
       </div>
    </div>

@@ -101,16 +101,20 @@
                 <a href="{% url 'index' %}" class="logout_button">Home</a>
             </div>
             <div class="dashboard_item">
+                <a href="/orders" class="logout_button">Purchase history</a>
+            </div>
+            <div class="dashboard_item">
+                <a href="#" class="logout_button">Wishlist</a>
+            </div>
+            <div class="dashboard_item">
                 <a href="{% url 'edit_user_details' %}" class="logout_button">Edit User Details</a>
+            </div>
+            
+            <div class="dashboard_item">
+                <a href="{% url 'forgot_password' %}" class="logout_button">Change Password</a>
             </div>
             <div class="dashboard_item">
                 <a href="{% url 'delete_user' %}" class="logout_button">Delete Account</a>
-            </div>
-            <div class="dashboard_item">
-                <a href="#" class="logout_button">Purchase history</a>
-            </div>
-            <div class="dashboard_item">
-                <a href="{% url 'forgot_password' %}" class="logout_button">Change Password</a>
             </div>
             <div class="dashboard_item">
                 <a href="{% url 'logout' %}" class="logout_button">Logout</a>

@@ -3,6 +3,58 @@
 <script defer src="{% static 'js/alpine.js' %}"></script>
 <script src="{% static 'js/tailwind.js' %}"></script>
 <script>tailwind.config = { darkMode: 'class', corePlugins: { preflight: false } }</script>
+<style>
+   #toggleLeaderboardButton {
+      display: block;
+      margin: 0 auto;
+  }
+   .hidden {
+      display: none;
+  }
+   body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+   }
+
+   .leaderboard-container {
+      margin-top: 10px;
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center; /* Add this line for centering the content */
+  }
+
+   h2 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 20px;
+      font-weight: bold;
+   }
+
+   table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+   }
+
+   th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+      color: #f8f9fa;
+   }
+
+   th {
+      background-color: #ffc108;
+   }
+
+   tbody tr:hover {
+      background-color: #f26522 !important;
+   }
+</style>
+
 <div class="banner_bg_main">
 
    <!-- header top section start -->
@@ -12,11 +64,14 @@
             <div class="col-sm-12">
                <div class="custom_menu">
                   <ul>
-                     <li><a href="#">Best Sellers</a></li>
+                     {% comment %} <li><a href="#">Best Sellers</a></li>
                      <li><a href="#">Gift Ideas</a></li>
                      <li><a href="#">New Releases</a></li>
-                     <li><a href="#">Today's Deals</a></li>
-                     <li><a href="#">Customer Service</a></li>
+                     <li><a href="#">Today's Deals</a></li> {% endcomment %}
+                     {% if is_index_page %}
+                        <li><button id="toggleLeaderboardButton" onclick="toggleLeaderboard()" style="padding: 10px 20px; background-color: #f26522; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Toggle Leaderboard</button></li>
+                     {% endif %}
+                     <li><a id="toggleLeaderboardButton" href='/polls' style="padding: 10px 20px; background-color: #f26522; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Polls</a></li>
                   </ul>
                </div>
             </div>
@@ -36,20 +91,39 @@
          </div> -->
    <!-- logo section end -->
    <!-- header section start -->
+   <div class="container leaderboard-container hidden" id="myLeaderboard" style="margin-top: 50px;">
+      <h2>Leaderboard</h2>
+      <table class="table table-bordered">
+         <thead>
+            <tr>
+               <th>User</th>
+               <th>Points</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for user_info, order in leaderboard_users %}
+               <tr>
+                  <td>{{ user_info.username }}</td>
+                  <td>{{ order.total_orders }}</td>
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+   </div>
    <div class="header_section">
       <div class="container">
          <div class="containt_main">
             <div id="mySidenav" class="sidenav" style="z-index: 10;">
                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
                <a href="{% url 'index' %}">Home</a>
-               <a href="{% url 'electronic' %}">Electronic</a>
+               {% comment %} <a href="{% url 'electronic' %}">Electronic</a> {% endcomment %}
                <!-- <a href="fashion.html">Fashion</a> -->
                <!-- <a href="electronic.html">Electronic</a> -->
 
                <!-- <a href="jewellery.html">Jewellery</a> -->
             </div>
             <span class="toggle_icon" onclick="openNav()"><img src="{% static 'images/toggle-icon.png' %}"></span>
-            <div class="dropdown">
+            {% comment %} <div class="dropdown">
                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Category
                </button>
@@ -58,19 +132,19 @@
                   <a class="dropdown-item" href="#">Another action</a>
                   <a class="dropdown-item" href="#">Something else here</a>
                </div>
-            </div>
+            </div> {% endcomment %}
             <div class="main">
                <!-- Another variation with a button -->
-               <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Search this blog">
-                  <div class="input-group-append">
-                     <button class="btn btn-secondary" type="button"
-                        style="background-color: #f26522; border-color:#f26522 ">
-                        <i class="fa fa-search"></i>
-                     </button>
-                  </div>
-               </div>
-            </div>
+               <form method="get" action="{% url 'product_search' %}" class="input-group">
+                   <input type="text" name="keyword" class="form-control" placeholder="Search items">
+                   <div class="input-group-append">
+                       <button type="submit" class="btn btn-secondary" style="background-color: #f26522; border-color: #f26522">
+                           <i class="fa fa-search"></i>
+                       </button>
+                   </div>
+               </form>
+           </div>
+            
             <div class="header_box">
                <!-- <div class="lang_box ">
                         <a href="#" title="Language" class="nav-link" data-toggle="dropdown" aria-expanded="true">
@@ -85,18 +159,18 @@
                      </div> -->
                <div class="login_menu">
                   <ul>
-                     <li><a href="/orders">
+                     {% comment %} <li><a href="/orders">
                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                           <span class="padding_10">Orders</span></a>
-                     </li>
+                           <span class="padding_10">Purchase History</span></a>
+                     </li> {% endcomment %}
                      <li><a href="/cart">
                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                            <span class="padding_10">Cart</span></a>
                      </li>
-                     <li><a href="/polls">
+                     {% comment %} <li><a href="/polls">
                            <i class="fa fa-thumbs-up" aria-hidden="true"></i>
                            <span class="padding_10">Polls</span></a>
-                     </li>
+                     </li> {% endcomment %}
                      <li>
                         <label for="dark-toggle"
                            class="flex relative h-8 w-14 cursor-pointer rounded-full bg-gray-300 transition has-[:checked]:bg-gray-800">
@@ -108,6 +182,10 @@
                         </label>
                      </li>
                      <script>
+                        function toggleLeaderboard() {
+                           var leaderboard = document.getElementById("myLeaderboard");
+                           leaderboard.classList.toggle("hidden");
+                       }
                         if (localStorage.dark == 'true') {
                            document.querySelector('#dark-toggle').checked = true;
                            document.body.classList.add('dark');
@@ -132,8 +210,10 @@
                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                               <a class="dropdown-item" href="{% url 'signup' %}" style="color: black;">Sign-up</a>
                               <a class="dropdown-item" href="{% url 'login' %}" style="color: black;">Log-in</a>
-                              <a class="dropdown-item" href="{% url 'forgot_password' %}" style="color: black;">Forget
-                                 Password</a>
+                              <a class="dropdown-item" href="{% url 'forgot_password' %}" style="color: black;">Forget Password</a>
+                              {% if user.is_authenticated %}
+                                    <a href="{% url 'user_page' %}" class="dropdown-item" style="color: black;" >{{ user.username }}'s Profile</a>
+                                    {% endif %}
                            </div>
                         </div>
                      </li>
@@ -144,13 +224,3 @@
       </div>
    </div>
 </div>
-<!-- header section end -->
-
-<div style="clear: both;"></div>
-<div class="my-6"></div>
-{% if error %}
-<div class="p-2 rounded bg-red-500 text-white max-w-lg mx-auto">
-   <strong>Error: </strong>{{error}}
-</div>
-{% endif %}
-<div class="my-6"></div>

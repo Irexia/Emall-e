@@ -25,8 +25,30 @@ def index(request):
     # Fetch login_info instances for each user
     leaderboard_users_info = [login_info.objects.get(id=user['user']) for user in leaderboard_users]
 
-    return render(request, "index.html", {"products": products, "leaderboard_users": zip(leaderboard_users_info, leaderboard_users)})
+    # Set is_index_page to True
+    is_index_page = True
 
+    # Include is_index_page in the context
+    context = {
+        "products": products,
+        "leaderboard_users": zip(leaderboard_users_info, leaderboard_users),
+        "is_index_page": is_index_page,
+    }
+
+    return render(request, "index.html", context)
+
+# def index(request):
+#     # Your existing logic for fetching products
+#     products = Product.objects.all()
+
+#     # Add the leaderboard functionality
+#     leaderboard_users = Order.objects.values('user').annotate(total_orders=Count('id')).filter(order_placed=True).order_by('-total_orders')[:5]
+
+#     # Fetch login_info instances for each user
+#     leaderboard_users_info = [login_info.objects.get(id=user['user']) for user in leaderboard_users]
+#     is_index_page = True
+
+#     return render(request, "index.html", {"products": products, "leaderboard_users": zip(leaderboard_users_info, leaderboard_users)})
 
 def electronic_view(request):
     return render(request, "electronic.html")
@@ -250,26 +272,26 @@ def cart(request, *args, **kwargs):
     )
 
 
-# import qrcode  # pip install qrcode pillow
-# import base64
-# from io import BytesIO
+import qrcode  # pip install qrcode pillow
+import base64
+from io import BytesIO
 
 
-# def generate_qr_code(url):
-#     qr = qrcode.QRCode(
-#         version=1,
-#         error_correction=qrcode.constants.ERROR_CORRECT_L,
-#         box_size=10,
-#         border=4,
-#     )
-#     qr.add_data(url)
-#     qr.make(fit=True)
+def generate_qr_code(url):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
 
-#     img = qr.make_image(fill_color="black", back_color="white")
-#     buffered = BytesIO()
-#     img.save(buffered, format="PNG")
-#     encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
-#     return encoded_image
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return encoded_image
 
 
 import json
@@ -406,6 +428,42 @@ def orders(request, *args, **kwargs):
     
     orders = Order.objects.filter(user=request.user)
     return render(request, "orders.html", {'orders': orders})
+def checkout(request, *args, **kwargs):
+    order = Order.objects.filter(user=request.user, order_placed=False).first()
+
+    if not order:
+        request.session["error"] = "Order does not exist"
+        return redirect("/cart")
+
+    if order.items.count() == 0:
+        print("Cart is empty")
+        request.session["error"] = "Cart is empty"
+        return redirect("/cart")
+
+    items = []
+    for item in order.items.all():
+        items.append(
+            {
+                **model_to_dict(item),
+                "price": item.product.price,
+                "product": {
+                    **model_to_dict(item.product),
+                    "category": model_to_dict(item.product.category),
+                },
+            }
+        )
+    vouchers = order.vouchers.all()
+
+    return render(
+        request,
+        "checkout.html",
+        {
+            "order": order,
+            "items": items,
+            "vouchers": vouchers,
+            "error": request.session.pop("error", None),
+        },
+    )
 
 # advanced search
 def product_search_view(request):
@@ -454,42 +512,7 @@ def custom_logout(request):
 from django.forms.models import model_to_dict
 
 
-def checkout(request, *args, **kwargs):
-    order = Order.objects.filter(user=request.user, order_placed=False).first()
 
-    if not order:
-        request.session["error"] = "Order does not exist"
-        return redirect("/cart")
-
-    if order.items.count() == 0:
-        print("Cart is empty")
-        request.session["error"] = "Cart is empty"
-        return redirect("/cart")
-
-    items = []
-    for item in order.items.all():
-        items.append(
-            {
-                **model_to_dict(item),
-                "price": item.product.price,
-                "product": {
-                    **model_to_dict(item.product),
-                    "category": model_to_dict(item.product.category),
-                },
-            }
-        )
-    vouchers = order.vouchers.all()
-
-    return render(
-        request,
-        "checkout.html",
-        {
-            "order": order,
-            "items": items,
-            "vouchers": vouchers,
-            "error": request.session.pop("error", None),
-        },
-    )
 def chatbot(request):
 
     chats = train()
